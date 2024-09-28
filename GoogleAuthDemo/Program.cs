@@ -1,4 +1,5 @@
 using GoogleAuthDemo.Data;
+using GoogleAuthDemo.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,11 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
     googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
 });
 
+
+var cf2ConnectionString = builder.Configuration.GetConnectionString("Cf2Connection")
+    ?? throw new InvalidOperationException("Connection string 'Cf2Connection' not found.");
+builder.Services.AddDbContext<Cf2Context>(options =>
+    options.UseSqlServer(cf2ConnectionString));
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -44,7 +50,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=SanPhams}/{action=SanPham1}/{id?}");
 app.MapRazorPages();
 
 app.Run();

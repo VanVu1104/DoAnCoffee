@@ -1,6 +1,7 @@
 using GoogleAuthDemo.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using GoogleAuthDemo.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

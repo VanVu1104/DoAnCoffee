@@ -1,4 +1,4 @@
-﻿using GoogleAuthDemo.Models;
+﻿using IdentityServer3.Core.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;

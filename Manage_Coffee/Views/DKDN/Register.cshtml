@@ -1,0 +1,35 @@
+﻿@model Manage_Coffee.Models.DKSDT
+@{
+    ViewData["Title"] = "Đăng Ký";
+}
+
+<h2>Đăng Ký</h2>
+
+<form asp-action="Register" method="post">
+    <div>
+        <label>Số điện thoại</label>
+        <input asp-for="Sdt" />
+        <span asp-validation-for="Sdt"></span>
+    </div>
+    <div>
+        <label>Mật khẩu</label>
+        <input asp-for="Matkhau" type="password" />
+        <span asp-validation-for="Matkhau"></span>
+    </div>
+    <div>
+        <label>Nhập lại mật khẩu</label>
+        <input asp-for="MatkhauNhapLai" type="password" />
+        <span asp-validation-for="MatkhauNhapLai"></span>
+    </div>
+    <div>
+        <label>Tên</label>
+        <input asp-for="Ten" />
+        <span asp-validation-for="Ten"></span>
+    </div>
+    <div>
+        <label>Địa chỉ</label>
+        <input asp-for="Diachi" />
+        <span asp-validation-for="Diachi"></span>
+    </div>
+    <button type="submit">Đăng Ký</button>
+</form>

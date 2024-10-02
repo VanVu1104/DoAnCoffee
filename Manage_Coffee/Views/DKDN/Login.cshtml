@@ -1,0 +1,20 @@
+﻿@model Manage_Coffee.Models.DNSDT
+@{
+    ViewData["Title"] = "Đăng Nhập";
+}
+
+<h2>Đăng Nhập</h2>
+
+<form asp-action="Login" method="post">
+    <div>
+        <label>Số điện thoại</label>
+        <input asp-for="Sdt" />
+        <span asp-validation-for="Sdt"></span>
+    </div>
+    <div>
+        <label>Mật khẩu</label>
+        <input asp-for="Matkhau" type="password" />
+        <span asp-validation-for="Matkhau"></span>
+    </div>
+    <button type="submit">Đăng Nhập</button>
+</form>

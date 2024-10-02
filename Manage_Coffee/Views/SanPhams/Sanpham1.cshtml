@@ -1,0 +1,56 @@
+﻿@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<Manage_Coffee.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+}
+
+<h1>Danh sách sản phẩm</h1>
+
+<!-- Nút tạo sản phẩm mới -->
+<p>
+    <a asp-action="Create1">Create New</a>
+</p>
+
+<!-- Hiển thị danh sách loại sản phẩm -->
+<div style="background-color: gray; display: block;">
+    @await Component.InvokeAsync("Category")
+</div>
+
+<!-- Bảng hiển thị danh sách sản phẩm -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.First().Ten)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Dongia)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Dvt)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Mota)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Anh)</th>
+            <th>@Html.DisplayNameFor(model => model.First().MaToppingNavigation.Ten)</th>
+            <th>@Html.DisplayNameFor(model => model.First().MaloaiNavigation.Ten)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Ten)</td>
+                <td>@Html.DisplayFor(modelItem => item.Dongia)</td>
+                <td>@Html.DisplayFor(modelItem => item.Dvt)</td>
+                <td>@Html.DisplayFor(modelItem => item.Mota)</td>
+                <td><img src="@Url.Content(item.Anh)" alt="@item.Ten" width="100" height="100" /></td>
+                <td>@Html.DisplayFor(modelItem => item.MaToppingNavigation.Ten)</td>
+                <td>@Html.DisplayFor(modelItem => item.MaloaiNavigation.Ten)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.MaSp">Details</a> |
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<!-- Phân trang -->
+@Html.PagedListPager(Model, page => Url.Action("Sanpham1", new { category = ViewBag.Query["category"], page }))

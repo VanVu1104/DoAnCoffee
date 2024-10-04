@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GoogleAuthDemo.ViewComponents
+namespace Manage_Coffee.ViewComponents
 {
     public class CategoryViewComponent : ViewComponent
     {

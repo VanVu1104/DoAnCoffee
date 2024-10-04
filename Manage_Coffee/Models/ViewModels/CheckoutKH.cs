@@ -7,5 +7,10 @@
         public string? DiaChi { get; set; }
         public string? DienThoai { get; set; }
         public string? GhiChu { get; set; }
+        public string MaCn { get; set; } 
+
+        public string TenCN { get; set; } 
+
+        public string Diachi { get; set; } 
     }
 }

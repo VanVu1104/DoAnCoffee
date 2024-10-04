@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.Json;
 
 
-
 namespace Manage_Coffee.Helpers
 {
 	public sealed class PaypalClient
@@ -56,78 +55,99 @@ namespace Manage_Coffee.Helpers
 
 		public async Task<CreateOrderResponse> CreateOrder(string value, string currency, string reference)
 		{
-			var auth = _httpContextAccessor.HttpContext.Session.GetString("access_token");
+			// Lấy thời gian hết hạn và thời gian lấy token từ session
+			var expiresIn = _httpContextAccessor.HttpContext.Session.GetInt32("expires_in");
+			var tokenTimeString = _httpContextAccessor.HttpContext.Session.GetString("token_time");
+			DateTime tokenTime = tokenTimeString != null ? DateTime.Parse(tokenTimeString) : DateTime.MinValue;
 
-			if (auth == null)
+			// Kiểm tra xem có cần lấy mới token không (nếu chưa có hoặc đã hết hạn)
+			var auth = _httpContextAccessor.HttpContext.Session.GetString("access_token");
+			if (auth == null || DateTime.UtcNow >= tokenTime.AddSeconds(expiresIn ?? 0))
 			{
 				var authResponse = await Authenticate();
 				auth = authResponse.access_token;
+
+				// Lưu token và thông tin vào session
 				_httpContextAccessor.HttpContext.Session.SetString("access_token", auth);
+				_httpContextAccessor.HttpContext.Session.SetInt32("expires_in", authResponse.expires_in);
+				_httpContextAccessor.HttpContext.Session.SetString("token_time", DateTime.UtcNow.ToString());
 			}
 
+			// Tạo yêu cầu đơn hàng
 			var request = new CreateOrderRequest
 			{
 				intent = "CAPTURE",
 				purchase_units = new List<PurchaseUnit>
+		{
+			new()
+			{
+				reference_id = reference,
+				amount = new Amount
 				{
-					new()
-					{
-						reference_id = reference,
-						amount = new Amount
-						{
-							currency_code = currency,
-							value = value
-						}
-					}
+					currency_code = currency,
+					value = value
 				}
+			}
+		}
 			};
 
+			// Gửi yêu cầu đến PayPal
 			var httpClient = new HttpClient();
 			httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {auth}");
 
 			var httpResponse = await httpClient.PostAsJsonAsync($"{BaseUrl}/v2/checkout/orders", request);
 
+			// Đọc phản hồi và phân tích JSON
 			var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+
+			// Kiểm tra lỗi JSON để chắc chắn phản hồi từ PayPal hợp lệ
+			if (string.IsNullOrWhiteSpace(jsonResponse))
+			{
+				throw new Exception("Empty response from PayPal.");
+			}
+
+			// Phân tích JSON
 			var response = JsonSerializer.Deserialize<CreateOrderResponse>(jsonResponse);
 
 			return response;
 		}
-	
 
-//public async Task<CreateOrderResponse> CreateOrder(string value, string currency, string reference)
-//{
-//	var auth = await Authenticate();
 
-//	var request = new CreateOrderRequest
-//	{
-//		intent = "CAPTURE",
-//		purchase_units = new List<PurchaseUnit>
-//	{
-//		new()
-//		{
-//			reference_id = reference,
-//			amount = new Amount
-//			{
-//				currency_code = currency,
-//				value = value
-//			}
-//		}
-//	}
-//	};
 
-//	var httpClient = new HttpClient();
+		//public async Task<CreateOrderResponse> CreateOrder(string value, string currency, string reference)
+		//{
+		//	var auth = await Authenticate();
 
-//	httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {auth.access_token}");
+		//	var request = new CreateOrderRequest
+		//	{
+		//		intent = "CAPTURE",
+		//		purchase_units = new List<PurchaseUnit>
+		//	{
+		//		new()
+		//		{
+		//			reference_id = reference,
+		//			amount = new Amount
+		//			{
+		//				currency_code = currency,
+		//				value = value
+		//			}
+		//		}
+		//	}
+		//	};
 
-//	var httpResponse = await httpClient.PostAsJsonAsync($"{BaseUrl}/v2/checkout/orders", request);
+		//	var httpClient = new HttpClient();
 
-//	var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
-//	var response = JsonSerializer.Deserialize<CreateOrderResponse>(jsonResponse);
+		//	httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {auth.access_token}");
 
-//	return response;
-//}
+		//	var httpResponse = await httpClient.PostAsJsonAsync($"{BaseUrl}/v2/checkout/orders", request);
 
-public async Task<CaptureOrderResponse> CaptureOrder(string orderId)
+		//	var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+		//	var response = JsonSerializer.Deserialize<CreateOrderResponse>(jsonResponse);
+
+		//	return response;
+		//}
+
+		public async Task<CaptureOrderResponse> CaptureOrder(string orderId)
 			{
 				var auth = await Authenticate();
 

@@ -24,22 +24,48 @@ namespace Manage_Coffee.Controllers
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
-        // Xử lý phản hồi sau khi đăng nhập với Google
-        [Route("google-response")]
-        public async Task<IActionResult> GoogleResponse()
-        {
-            var result = await _accountRepository.ExternalLoginCallbackAsync();
-            if (result.Succeeded)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            return RedirectToAction("Login");
-        }
+		// Xử lý phản hồi sau khi đăng nhập với Google
+		[Route("google-response")]
+		public async Task<IActionResult> GoogleResponse()
+		{
+			// Kiểm tra kết quả đăng nhập
+			var result = await _accountRepository.ExternalLoginCallbackAsync();
+			if (result.Succeeded)
+			{
+				// Lấy email từ các claim của người dùng
+				var emailClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "email");
+				var email = emailClaim?.Value;
+
+				if (!string.IsNullOrEmpty(email))
+				{
+					// Xử lý tiếp theo với email, ví dụ tìm khách hàng trong cơ sở dữ liệu hoặc tạo mới
+					var user = await _accountRepository.GetUserByEmailAsync(email);
+					if (user != null)
+					{
+						// User đã tồn tại, tiếp tục xử lý
+						return RedirectToAction("Index", "Home");
+					}
+					else
+					{
+						// Nếu chưa có user, bạn có thể tạo mới hoặc yêu cầu thêm thông tin
+						return RedirectToAction("SignUp", "Account");
+					}
+				}
+				else
+				{
+					ModelState.AddModelError("", "Không thể lấy email từ Google");
+					return RedirectToAction("Login");
+				}
+			}
+
+			return RedirectToAction("Login");
+		}
 
 
-        /* ======================================================= */
-        /* Login with Gmail */
-        [Route("signup")]
+
+		/* ======================================================= */
+		/* Login with Gmail */
+		[Route("signup")]
         public IActionResult Signup()
         {
             return View();

@@ -75,7 +75,7 @@
 								  </div>
 							</td>
 							<td>
-								<p class="mb-0 mt-4">$ @Model.CartItems.Where(X=>X.ProductID == item.ProductID).Sum(X=> X.Soluong*X.Dongia).ToString();
+								<p class="mb-0 mt-4">$ @Model.CartItems.Where(X=>X.ProductID == item.ProductID && X.SizeID == item.SizeID).Sum(X=> X.Soluong*(X.Dongia +  X.TriGia)).ToString();
 								</p>
 							</td>
 							
@@ -84,7 +84,6 @@
 						
 							<td>@item.Ghichu</td> 
 						
-							<td colspan="6"> Grand Total : @Model.GrandTotal.ToString()</td>
 						</tr>
 						}
 					}
@@ -96,7 +95,10 @@
 					}
 				</tbody>
 			</table>
+			<td colspan="6"> Grand Total : @Model.GrandTotal.ToString()</td>
 		</div>
-		
+		<div>
+			<a class="btn btn-default" asp-action="Checkout" asp-controller="Cart">Thanh toán </a>
+		</div>
 	</div>
 </div>

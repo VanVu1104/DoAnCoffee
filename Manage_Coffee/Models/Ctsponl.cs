@@ -13,7 +13,7 @@ public partial class Ctsponl
 
     public string? Ghichu { get; set; }
 
-    public string MaSp { get; set; } = null!;
+    public string MaSp { get; set; }
 
     public string MaPhieuonl { get; set; } = null!;
 

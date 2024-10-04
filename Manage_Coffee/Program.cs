@@ -8,24 +8,28 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDistributedMemoryCache();
 
 //Google
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-.AddCookie()
-//.AddCookie(options =>
-//{
-//    options.LoginPath = "/DKDN/Login"; // Đường dẫn đăng nhập
-//    options.LogoutPath = "/DKDN/Logout"; // Đường dẫn đăng xuất
-//})
-.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+}).AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
 {
-    options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
-    options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+	options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
+	options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
 });
+//.AddCookie()
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+	options.IdleTimeout = TimeSpan.FromSeconds(30);
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true;
+});
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -65,6 +69,7 @@ builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true; // Cookie chỉ có thể truy cập qua HTTP
     options.Cookie.IsEssential = true; // Cookie cần thiết cho ứng dụng
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 builder.Services.Configure<SMTPConfigModel>(builder.Configuration.GetSection("SMTPConfig"));
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -72,6 +77,13 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddScoped<IUserService, UserService>();
 // Tạo app sau khi đã đăng ký tất cả dịch vụ
+builder.Services.AddSingleton(x => new PaypalClient(
+		builder.Configuration["PaypalOptions:AppId"],
+		builder.Configuration["PaypalOptions:AppSecret"],
+		builder.Configuration["PaypalOptions:Mode"],
+
+		   x.GetRequiredService<IHttpContextAccessor>()
+));
 
 
 var app = builder.Build();

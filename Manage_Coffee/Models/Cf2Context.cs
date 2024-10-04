@@ -60,7 +60,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-29MRHMV\\SQLEXPRESS;Database=cf4;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-29MRHMV\\SQLEXPRESS;Database=cf7;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -117,7 +117,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsFixedLength()
                 .HasColumnName("MaSP");
             entity.Property(e => e.MaKh)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("MaKH");
@@ -167,7 +167,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
             entity.ToTable("CTSanPham");
 
             entity.Property(e => e.MaOrder)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength();
             entity.Property(e => e.MaSp)
@@ -176,7 +176,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsFixedLength()
                 .HasColumnName("MaSP");
             entity.Property(e => e.MaKh)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("MaKH");
@@ -214,7 +214,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsFixedLength()
                 .HasColumnName("MaSP");
             entity.Property(e => e.MaPhieuonl)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength();
             entity.Property(e => e.MaSize)
@@ -222,7 +222,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsUnicode(false)
                 .IsFixedLength();
             entity.Property(e => e.MaKh)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("MaKH");
@@ -277,7 +277,13 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("MaKM");
+            entity.Property(e => e.GiaTri)
+                .HasColumnName("GiaTri");
+            entity.Property(e => e.Hanmuc)
+                .HasColumnName("Hanmuc");
             entity.Property(e => e.Ten).HasMaxLength(50);
+            entity.Property(e => e.Ngayhethan).HasColumnType("date");
+            entity.Property(e => e.Ngayapdung).HasColumnType("date");
         });
 
         modelBuilder.Entity<KhachHang>(entity =>
@@ -423,7 +429,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
             entity.ToTable("PhieuOrder");
 
             entity.Property(e => e.MaOrder)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength();
             entity.Property(e => e.MaCn)
@@ -431,11 +437,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("MaCN");
-            entity.Property(e => e.MaKh)
-                .HasMaxLength(5)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("MaKH");
+            
             entity.Property(e => e.MaKm)
                 .HasMaxLength(5)
                 .IsUnicode(false)
@@ -447,22 +449,21 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsFixedLength()
                 .HasColumnName("MaNV");
             entity.Property(e => e.Ngaygiodat).HasColumnType("datetime");
-            entity.Property(e => e.Ptnh)
-                .HasMaxLength(50)
-                .HasColumnName("PTNH");
+         
             entity.Property(e => e.Pttt)
                 .HasMaxLength(50)
                 .HasColumnName("PTTT");
+            entity.Property(e => e.Ten)
+                .HasMaxLength(50)
+                .HasColumnName("Ten");
+            entity.Property(e => e.Sdt)
+                .HasColumnName("Sdt");
 
             entity.HasOne(d => d.MaCnNavigation).WithMany(p => p.PhieuOrders)
                 .HasForeignKey(d => d.MaCn)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__PhieuOrder__MaCN__5070F446");
 
-            entity.HasOne(d => d.MaKhNavigation).WithMany(p => p.PhieuOrders)
-                .HasForeignKey(d => d.MaKh)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__PhieuOrder__MaKH__4F7CD00D");
 
             entity.HasOne(d => d.MaKmNavigation).WithMany(p => p.PhieuOrders)
                 .HasForeignKey(d => d.MaKm)
@@ -480,7 +481,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
             entity.ToTable("Phieudhonl");
 
             entity.Property(e => e.MaPhieuonl)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength();
             entity.Property(e => e.DiaChi).HasMaxLength(50);
@@ -490,7 +491,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsFixedLength()
                 .HasColumnName("MaCN");
             entity.Property(e => e.MaKh)
-                .HasMaxLength(5)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("MaKH");

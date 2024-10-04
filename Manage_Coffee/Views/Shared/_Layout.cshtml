@@ -42,7 +42,7 @@
 
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-dark">Số điện thoại: @HttpContextAccessor.HttpContext.Session.GetString("UserPhone")</span>
+                                <span class="nav-link text-dark">Tên người dùng: @HttpContextAccessor.HttpContext.Session.GetString("UserName")</span>
                             </li>
                             <li class="nav-item">
                                 <form asp-controller="DKDN" asp-action="Logout" method="post" class="nav-link" style="display:inline;">

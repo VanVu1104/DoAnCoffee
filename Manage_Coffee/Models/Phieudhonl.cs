@@ -21,7 +21,7 @@ public partial class Phieudhonl
 
     public string? Ptnh { get; set; }
 
-    public string MaKh { get; set; } = null!;
+    public string MaKh { get; set; } 
 
     public string MaCn { get; set; } = null!;
 

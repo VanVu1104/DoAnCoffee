@@ -17,9 +17,9 @@ public partial class PhieuOrder
 
     public string? Pttt { get; set; }
 
-    public string? Ptnh { get; set; }
+    public string? Ten { get; set; }
 
-    public string MaKh { get; set; } = null!;
+    public int? Sdt { get; set; }
 
     public string MaCn { get; set; } = null!;
 
@@ -31,7 +31,7 @@ public partial class PhieuOrder
 
     public virtual ChiNhanh MaCnNavigation { get; set; } = null!;
 
-    public virtual KhachHang MaKhNavigation { get; set; } = null!;
+
 
     public virtual DanhMucKm? MaKmNavigation { get; set; }
 

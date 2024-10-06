@@ -24,14 +24,13 @@ namespace Manage_Coffee.Repository
         }
         public async Task<IdentityResult> CreateUserAsync(SignUpUserModel userModel)
         {
-
+            // Xóa confirm email khi tạo tài khoản
             var user = new ApplicationUser()
             {
                 FirstName = userModel.FirstName,
                 LastName = userModel.LastName,
                 Email = userModel.Email,
                 UserName = userModel.Email,
-                EmailConfirmed = true,
             };
             var result = await _userManager.CreateAsync(user, userModel.Password);
             if (result.Succeeded)
@@ -40,7 +39,6 @@ namespace Manage_Coffee.Repository
                 if (!string.IsNullOrEmpty(token))
                 {
                    
-                        
                     await SendEmailConfirmationEmail(user, token);
                     using (var context = new Cf2Context())
                     {

@@ -1,0 +1,37 @@
+﻿@model Manage_Coffee.Areas.Admin.Models.RegisterViewModel
+
+<h2>Đăng ký tài khoản</h2>
+
+<form asp-action="Register" method="post">
+    <div>
+        <label for="Ten">Họ tên:</label>
+        <input type="text" id="Ten" name="Ten" asp-for="Ten" required />
+    </div>
+    <div>
+        <label for="Sdt">Số điện thoại:</label>
+        <input type="number" id="Sdt" name="Sdt" asp-for="Sdt" required />
+    </div>
+    <div>
+        <label for="Mkhau">Mật khẩu:</label>
+        <input type="password" id="Mkhau" name="Mkhau" asp-for="Mkhau" required />
+    </div>
+    <div>
+        <label for="Chucvu">Chức vụ:</label>
+        <select id="Chucvu" name="Chucvu" asp-for="Chucvu">
+            <option value="Quản lý">Quản lý</option>
+            <option value="Phục vụ">Phục vụ</option>
+        </select>
+    </div>
+    <div>
+        <label for="Diachi">Địa chỉ:</label>
+        <input type="text" id="Diachi" name="Diachi" asp-for="Diachi" required />
+    </div>
+    <button type="submit">Đăng ký</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div style="color: red;">
+        @ViewBag.Error
+    </div>
+}

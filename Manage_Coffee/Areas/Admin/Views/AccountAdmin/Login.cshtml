@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Đăng Nhập";
+}
+
+<h2>Đăng Nhập</h2>
+
+<form asp-action="Login" method="post">
+    <div>
+        <label for="sdt">Số điện thoại</label>
+        <input type="number" name="sdt" required />
+    </div>
+    <div>
+        <label for="password">Mật khẩu</label>
+        <input type="password" name="password" required />
+    </div>
+    <button type="submit">Đăng Nhập</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}

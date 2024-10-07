@@ -97,15 +97,20 @@ if (!app.Environment.IsDevelopment())
 }
 
 
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllerRoute(
+      name: "areas",
+      pattern: "{area:exists}/{controller=AccountAdmin}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+

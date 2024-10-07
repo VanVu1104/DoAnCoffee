@@ -18,6 +18,7 @@ namespace Manage_Coffee.Helpers
             var identity = await base.GenerateClaimsAsync(user);
             identity.AddClaim(new Claim("UserFirstName", user.FirstName?? " "));
             identity.AddClaim(new Claim("UserLastName", user.LastName?? " "));
+            identity.AddClaim(new Claim("email", user.Email?? " "));
 			identity.AddClaim(new Claim("MAKH", user.Email ?? " "));
 			return identity;
         }

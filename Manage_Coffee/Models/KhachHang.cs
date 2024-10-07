@@ -5,7 +5,7 @@ namespace Manage_Coffee.Models;
 
 public partial class KhachHang
 {
-    public string Role { get; set; } = null!;
+    public string Role { get; set; } = "Dong";
 
     public string MaKh { get; set; } = null!;
 
@@ -25,4 +25,5 @@ public partial class KhachHang
     public virtual ICollection<PhieuOrder> PhieuOrders { get; set; } = new List<PhieuOrder>();
 
     public virtual ICollection<Phieudhonl> Phieudhonls { get; set; } = new List<Phieudhonl>();
+
 }

@@ -76,6 +76,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<KhachHangService>();
 // Tạo app sau khi đã đăng ký tất cả dịch vụ
 builder.Services.AddSingleton(x => new PaypalClient(
 		builder.Configuration["PaypalOptions:AppId"],

@@ -1,0 +1,61 @@
+﻿@model Manage_Coffee.Models.KhachHang
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> _signInManager
+
+<div class="container mt-5">
+    <h3>Cập nhật thông tin khách hàng</h3>
+    <form asp-action="ChinhSuaThongTin" method="post">
+        <div class="form-group">
+            <label for="Ten">Tên:</label>
+            <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" />
+        </div>
+        <div class="form-group">
+            <label for="Diachi">Địa chỉ:</label>
+            <input type="text" class="form-control" id="Diachi" name="Diachi" value="@Model.Diachi" />
+        </div>
+        @if (HttpContextAccessor.HttpContext.Session.GetString("UserName") != null)
+        {
+
+            <div class="form-group">
+                <label for="Sdt">Số điện thoại:</label>
+                <input type="text" class="form-control" id="Sdt" name="Sdt" value="@Model.Sdt" readonly />
+            </div>
+        }
+        else
+        {
+
+            <div class="form-group">
+                <label for="Sdt">Số điện thoại:</label>
+                <input type="text" class="form-control" id="Sdt" name="Sdt" value="@Model.Sdt" />
+            </div>
+        }
+
+        @if (_signInManager.IsSignedIn(User))
+        {
+            <div class="form-group">
+                <label for="Email">Email:</label>
+                <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" readonly />
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label for="Email">Email:</label>
+                <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" />
+            </div>
+        }
+
+
+        <div class="form-group">
+            <label>Giới tính:</label><br />
+            <input type="radio" id="Nam" name="GioiTinh" value="true" @(Model.GioiTinh == true ? "checked" : "") />
+            <label for="Nam">Nam</label>
+            <input type="radio" id="Nu" name="GioiTinh" value="false" @(Model.GioiTinh == false ? "checked" : "") />
+            <label for="Nu">Nữ</label>
+        </div>
+
+        <input type="hidden" name="MaKh" value="@Model.MaKh" />
+        <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+        <a href="@Url.Action("ThongTinKhachHang", "KhachHang", new { id = Model.MaKh })" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

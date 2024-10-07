@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Manage_Coffee.Models.CartItem>
+﻿@* @using Manage_Coffee.Models.ViewModels
+@model CartItemViewModel *@
+@model Manage_Coffee.Models.ViewModels.CartItemViewModel
 @{
 	ViewData["Title"] = "Checkout";
 }
@@ -47,7 +49,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								@foreach (var item in Model)
+								@foreach (var item in Model.CartItems)
 								{
 									<tr>
 										 @* <th scope="row">
@@ -64,6 +66,21 @@
 										<td class="py-5">@item.Total</td>
 									</tr>
 								}
+								<div>
+									<label for="MaCn">Chọn Chi Nhánh:</label>
+									@await Component.InvokeAsync("ChiNhanh")
+								</div>
+								<div>
+									<h3>Danh sách giảm giá</h3>
+									<select id="DiscountCode">
+										<option value="MaKm">Chọn mã giảm giá</option>
+										@foreach (var discount in Model.Discounts)
+										{
+											<option value="@discount.MaKm">@discount.Ten</option>
+										}
+									</select>
+
+								</div>
 								<tr>
 									<th scope="row">
 									</th>
@@ -74,12 +91,13 @@
 									</td>
 									<td class="py-5">
 										<div class="py-3 border-bottom border-top">
-											<p class="mb-0 text-dark">$@Model.Sum(p => p.Total).ToString("#,##0")</p>
+											<p class="mb-0 text-dark">$@Model.CartItems.Sum(p => p.Total).ToString("#,##0")</p>
 										</div>
 									</td>
 								</tr>
-								
-								
+
+								<p>Tổng giá sau giảm: <span id="totalValue">@Model.CartItems.Sum(p => p.Total).ToString("C")</span></p>
+
 							</tbody>
 						</table>
 					</div>
@@ -91,10 +109,7 @@
 							</div>
 						</div>
 					</div>
-					<div>
-						<label for="MaCn">Chọn Chi Nhánh:</label>
-						@await Component.InvokeAsync("ChiNhanh")
-					</div>
+				
 				</div>
 			</div>
 		</form>
@@ -104,6 +119,60 @@
 @section Scripts {
 	<script src="https://www.paypal.com/sdk/js?client-id=@ViewBag.PaypalClientdId"></script>
 	<script>
+		var discounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Discounts));
+	</script>
+	<script>
+		$(document).ready(function () {
+			$("#DiscountCode").change(function () {
+				var discountValue = $(this).val(); // Lấy giá trị từ dropdown
+				$("#SelectedDiscount").val(discountValue);
+				if (!discountValue) {
+					alert("Vui lòng chọn một mã giảm giá.");
+					return;
+				}
+
+				var subtotal = @Model.CartItems.Sum(p => p.Total); // Tổng giá ban đầu
+				var discounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Discounts)); // Chuyển đổi Discounts thành JSON
+				var validDiscount = null; // Khởi tạo biến cho mã giảm giá hợp lệ
+
+				// Kiểm tra mã giảm giá
+				validDiscount = discounts.find(discount => {
+					var startDate = new Date(discount.Ngayapdung);
+					var endDate = new Date(discount.Ngayhethan);
+					var hanMuc = discount.Hanmuc;
+
+					return discount.MaKm === discountValue && subtotal >= hanMuc && new Date() >= startDate && new Date() <= endDate;
+				});
+
+				// Cập nhật tổng giá trị sau khi áp dụng giảm giá
+				if (!validDiscount) {
+					alert("Mã giảm giá không hợp lệ hoặc không đủ điều kiện sử dụng.");
+					$('#totalValue').text(subtotal.toFixed(2)); // Hiển thị tổng ban đầu
+				} else {
+					// Tính toán tổng tiền sau khi áp dụng giảm giá
+					var discountAmount = validDiscount.GiaTri; // Giả sử đây là phần trăm giảm giá
+					var newTotal = subtotal - (subtotal * discountAmount / 100);
+					$('#totalValue').text(newTotal.toFixed(2));
+					$("#FinalTotal").val(newTotal.toFixed(2)); // Cập nhật hiển thị tổng
+				}
+
+				// Tô màu cho các phiếu giảm giá không hợp lệ
+				$('#DiscountCode option').each(function () {
+					var optionValue = $(this).val();
+					var isValid = discounts.some(discount => {
+						var startDate = new Date(discount.Ngayapdung);
+						var endDate = new Date(discount.Ngayhethan);
+						var hanMuc = discount.Hanmuc;
+
+						return optionValue === discount.MaKm && subtotal >= hanMuc && new Date() >= startDate && new Date() <= endDate;
+					});
+
+					$(this).toggleClass('invalid-discount', !isValid);
+					$(this).toggleClass('valid-discount', isValid);
+				});
+			});
+		});
+
 		$(document).ready(function () {
 			$("#GiongKhachHang").change(function () {
 				if ($(this).prop("checked")) {
@@ -115,6 +184,7 @@
 				}
 			});
 		});
+
 		paypal.Buttons({
 			style: {
 				layout: 'vertical',
@@ -126,25 +196,42 @@
 					method: "post",
 				}).then((response) => {
 					if (!response.ok) {
-						return response.json().then(error => { throw error; });
+						return response.json().then(error => { throw "error"; });
 					}
-
 					return response.json();
-				}).then((order) => order.id)
-					.catch(error => alert(error.message));
+				}).then((order) => {
+					console.log(order); // Kiểm tra phản hồi
+					return order.id;
+				}).catch(error => {
+					console.error("Lỗi tạo đơn hàng: ", error); // Log lỗi
+					alert(error.message || "Có lỗi xảy ra trong quá trình tạo đơn hàng.");
+				});
 			},
 			onApprove: (data, actions) => {
-				return fetch(`/Cart/capture-paypal-order?orderId=${data.orderID}`, {
+				console.log(data); // Kiểm tra giá trị data
+				return fetch(`/Cart/capture-paypal-order?orderID=${data.orderID}`, {
 					method: "post",
 				}).then((response) => {
 					if (!response.ok) {
-						return response.json().then(error => { throw error; });
+						return response.json().then(error => { throw "error"; });
 					}
-
-					//Đổi địa chỉ tới action thông báo thành công
+					// Chuyển hướng đến trang thành công
 					window.location.href = "/Cart/PaymentSuccess";
-				}).catch(error => alert(error.message));
+				});
 			}
 		}).render('#paypal-button-container');
 	</script>
+
 }
+<style>
+	.invalid-discount {
+		color: red; /* Màu chữ đỏ */
+		background-color: #f8d7da; /* Nền màu hồng nhạt */
+	}
+
+	.valid-discount {
+		color: green; /* Màu chữ xanh */
+		background-color: #d4edda; /* Nền màu xanh nhạt */
+	}
+
+</style>

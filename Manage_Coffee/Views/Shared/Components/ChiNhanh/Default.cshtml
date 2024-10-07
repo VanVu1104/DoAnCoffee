@@ -1,0 +1,9 @@
+﻿@model List<ChiNhanh>
+
+<select name="MaCn" id="MaCn" class="form-control">
+    <option value="">Chọn Chi Nhánh</option>
+    @foreach (var branch in Model)
+    {
+        <option value="@branch.MaCn">@branch.Ten - @branch.Diachi</option>
+    }
+</select>

@@ -141,6 +141,7 @@ namespace Manage_Coffee.Controllers
 		public IActionResult Checkout(CheckoutKH checkoutKH)
 		{
 			var makh = "";
+			var macn = "";
 			int tongtien = 0;
 			// Lấy mã khách hàng từ Claims
 			if (HttpContext.Session.GetString("UserName") == null)
@@ -177,8 +178,8 @@ namespace Manage_Coffee.Controllers
 				Pttt = "COD",
 				TrangThai = false,
 				MaKm = "KM001",
-				MaCn = "CN001",
-				TongTien = 0, // Initialize with 0, will update later
+                MaCn = checkoutKH.MaCn, 
+                TongTien = 0, // Initialize with 0, will update later
 				TienShip = 20
 			};
 

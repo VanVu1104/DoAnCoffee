@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
     @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> _signInManager
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,6 +22,11 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    @if (HttpContextAccessor.HttpContext.Session.GetString("UserName") != null || _signInManager.IsSignedIn(User))
+                    {                      
+                            <a class="nav-link text-dark" asp-controller="KhachHang" asp-action="ThongTinKhachHang">Thông tin khách hàng</a>
+                        
+                    }
                     <ul class="navbar-nav">
                         <partial name="_LoginInfo"/>
                     </ul>
@@ -51,7 +57,11 @@
                             </li>
                         }
 
+
+
                         else
+
+
 
                         {
                             <li class="nav-item">
@@ -85,9 +95,13 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-@*     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGaGFsFZCSyn8CWeFZxhZd3gCp" crossorigin="anonymous"></script>
- *@    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    @*     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGaGFsFZCSyn8CWeFZxhZd3gCp" crossorigin="anonymous"></script>
+    *@
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-9aYd4yDxT/7pJ9PtWJ3Dg4Cq4A4G9+1h9U9mL+1mcU4HhtcDjc/NhdScU9X1ZpI4" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/additional-methods.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

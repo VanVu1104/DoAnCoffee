@@ -4,6 +4,8 @@ using Manage_Coffee.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Logging;
+using Newtonsoft.Json;
 
 namespace Manage_Coffee.Controllers
 {
@@ -28,9 +30,37 @@ namespace Manage_Coffee.Controllers
 				CartItems = Cart,
 				GrandTotal = Cart.Sum(X => X.Soluong *
 				(X.Dongia + X.TriGia)),
+				Discounts = _context.DanhMucKms.ToList()
 			};
 			return View(cart1);
 		}
+		[HttpPost]
+		public IActionResult ApplyDiscount(string discountCode)
+		{
+			List<CartItem> cart = HttpContext.Session.Get<List<CartItem>>(MySetting.Cart_key);
+			if (cart == null || !cart.Any())
+			{
+				return BadRequest("Giỏ hàng trống.");
+			}
+
+			var discount = _context.DanhMucKms.SingleOrDefault(d => d.MaKm == discountCode);
+			if (discount == null || discount.Soluong <= 0 || discount.Ngayhethan < DateTime.Now)
+			{
+				return BadRequest("Mã giảm giá không hợp lệ.");
+			}
+
+			// Tính toán và áp dụng giảm giá
+			int discountAmount = discount.GiaTri; // Giả sử là giá trị giảm giá
+			int grandTotal = cart.Sum(item => (item.Dongia + item.TriGia) * item.Soluong) * (1 - discountAmount / 100);
+
+			// Cập nhật lại tổng tiền trong ViewBag hoặc Model
+			ViewBag.DiscountApplied = discountAmount;
+			ViewBag.NewTotal = grandTotal;
+
+			// Quay lại View giỏ hàng
+			return RedirectToAction("Cart");
+		}
+
 		public async Task<IActionResult> Add(string id, string idsize, string ghiChu)
 		{
 			SanPham sanPham = await _context.SanPhams.FindAsync(id);
@@ -129,124 +159,162 @@ namespace Manage_Coffee.Controllers
 		public IActionResult Checkout()
 		{
 			List<CartItem> cart = HttpContext.Session.Get<List<CartItem>>(MySetting.Cart_key);
-			if (cart.Count == 0)
+			if (cart == null || cart.Count == 0)
 			{
 				return Redirect("/");
 			}
 			ViewBag.PaypalClientdId = _paypalClient.ClientId;
-			return View(cart);
-		}
-		//[Authorize]
-		[HttpPost]
-		public IActionResult Checkout(CheckoutKH checkoutKH)
-		{
-			var makh = "";
-			var macn = "";
-			int tongtien = 0;
-			// Lấy mã khách hàng từ Claims
-			if (HttpContext.Session.GetString("UserName") == null)
+			var viewModel = new CartItemViewModel
 			{
-				var makhClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "MAKH");
-				makh = makhClaim?.Value;
-			}
-			else
-			{
-				makh = HttpContext.Session.GetString("UserPhone");
-			}
-
-
-			if (string.IsNullOrEmpty(makh))
-			{
-				throw new Exception("Mã khách hàng không tồn tại trong Claims!");
-			}
-
-			var khachhang = _context.KhachHangs.SingleOrDefault(kh => kh.MaKh == makh);
-			if (khachhang == null)
-			{
-				throw new Exception($"Không tìm thấy khách hàng với mã: {makh}");
-			}
-
-			Console.WriteLine($"Khách hàng: {khachhang.Ten}");
-
-			var hoadon = new Phieudhonl
-			{
-				MaPhieuonl = makh + DateTime.Now,
-				MaKh = makh,
-				DiaChi = checkoutKH.DiaChi ?? khachhang.Diachi,
-				Ngaygiodat = DateTime.Now,
-				Ptnh = "GRAB",
-				Pttt = "COD",
-				TrangThai = false,
-				MaKm = "KM001",
-                MaCn = checkoutKH.MaCn, 
-                TongTien = 0, // Initialize with 0, will update later
-				TienShip = 20
+				CartItems = cart, // Gán danh sách cart vào thuộc tính CartItems
+				Discounts = new List<DanhMucKm>()
 			};
-
-			// Begin transaction
-			using (var transaction = _context.Database.BeginTransaction())
+			viewModel.Discounts = GetDiscounts();
+			return View(viewModel);
+		}
+		private List<DanhMucKm> GetDiscounts()
+		{
+			// Giả sử bạn có một dịch vụ hoặc repository để lấy giảm giá
+			// Ví dụ, nếu bạn sử dụng Entity Framework
+			using (var context = new Cf2Context())
 			{
-				List<CartItem> cart = HttpContext.Session.Get<List<CartItem>>(MySetting.Cart_key);
-				try
-				{
-					// Calculate total before saving
-					tongtien = 0;
-					var ctsp = new List<Ctsponl>();
-
-					foreach (var item in cart)
-					{
-						tongtien += (item.Dongia + item.TriGia) * item.Soluong;
-						ctsp.Add(new Ctsponl
-						{
-							MaKh = makh,
-							MaPhieuonl = hoadon.MaPhieuonl,
-							Soluong = item.Soluong,
-							MaSp = item.ProductID,
-							MaSize = item.SizeID,
-							Gia = item.Dongia,
-							Ghichu = item.Ghichu,
-							Tongtien = tongtien,
-						});
-					}
-
-					// Update the invoice total
-					hoadon.TongTien = tongtien + hoadon.TienShip; // Include shipping if needed
-
-					// Save invoice first
-					_context.Add(hoadon);
-					_context.SaveChanges();
-
-					// Save cart items
-					_context.AddRange(ctsp);
-					_context.SaveChanges();
-
-					// Commit the transaction if everything succeeded
-					transaction.Commit();
-
-
-
-					// Xóa giỏ hàng
-					HttpContext.Session.Set<List<CartItem>>(MySetting.Cart_key, new List<CartItem>());
-					return View("Success");
-				}
-				catch (Exception ex)
-				{
-					// Rollback giao dịch nếu có lỗi xảy ra
-					transaction.Rollback();
-					// Bạn có thể ghi log lỗi ở đây nếu cần
-					throw; // hoặc trả về thông báo lỗi phù hợp
-				}
+				return context.DanhMucKms.ToList(); // Lấy danh sách giảm giá từ cơ sở dữ liệu
 			}
 		}
-		public IActionResult PaymentSuccess()
-		{
-			return View("Success");
-		}
 
+		[HttpPost]
+        public IActionResult Checkout(CheckoutKH checkoutKH, string macn, string MaKm, decimal totalValue)
+        {
+            var makh = "";
+            int tongtien = 0;
 		
+            if (HttpContext.Session.GetString("UserName") == null)
+            {
+                var makhClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "MAKH");
+                makh = makhClaim?.Value;
+            }
+            else
+            {
+                makh = HttpContext.Session.GetString("UserPhone");
+            }
 
-		#region Paypal payment
-		[Authorize]
+            if (string.IsNullOrEmpty(makh))
+            {
+                throw new Exception("Mã khách hàng không tồn tại trong Claims!");
+            }
+
+            var khachhang = _context.KhachHangs.SingleOrDefault(kh => kh.MaKh == makh);
+            if (khachhang == null)
+            {
+                throw new Exception($"Không tìm thấy khách hàng với mã: {makh}");
+            }
+
+            // Tính tổng chi tiêu của khách hàng
+            var tongChiTieu = _context.Phieudhonls
+                .Where(hd => hd.MaKh == makh)
+                .Sum(hd => hd.TongTien);
+
+            // Xác định vai trò của khách hàng dựa trên tổng chi tiêu
+            if (tongChiTieu > 3000000)
+            {
+                khachhang.Role = "Vang"; // Nâng cấp lên Vàng
+            }
+            else if (tongChiTieu > 1000000)
+            {
+                khachhang.Role = "Bac"; 
+            }
+            else
+            {
+                khachhang.Role = "Dong"; 
+            }
+
+           
+            _context.Update(khachhang);
+            _context.SaveChanges();
+
+            Console.WriteLine($"Khách hàng: {khachhang.Ten}, Role: {khachhang.Role}");
+
+            var hoadon = new Phieudhonl
+            {
+                MaPhieuonl = makh + DateTime.Now.ToString("yyyyMMddHHmmss"),
+                MaKh = makh,
+                DiaChi = checkoutKH.DiaChi ?? khachhang.Diachi,
+                Ngaygiodat = DateTime.Now,
+                Ptnh = "GRAB",
+                Pttt = "COD",
+                TrangThai = false,
+                MaKm = MaKm,
+                MaCn = macn,
+                TongTien = 0,
+                TienShip = 20
+            };
+
+            // Bắt đầu giao dịch
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                List<CartItem> cart = HttpContext.Session.Get<List<CartItem>>(MySetting.Cart_key);
+                try
+                {
+                    tongtien = 0;
+                    var ctsp = new List<Ctsponl>();
+
+                    foreach (var item in cart)
+                    {
+                        tongtien =0;
+                        ctsp.Add(new Ctsponl
+                        {
+                            MaKh = makh,
+                            MaPhieuonl = hoadon.MaPhieuonl,
+                            Soluong = item.Soluong,
+                            MaSp = item.ProductID,
+                            MaSize = item.SizeID,
+                            Gia = item.Dongia,
+                            Ghichu = item.Ghichu,
+                            Tongtien = (item.Dongia + item.TriGia) * item.Soluong,
+                        });
+                    }
+
+                   
+                    hoadon.TongTien = (int)totalValue + hoadon.TienShip;
+
+
+                   // được để thông báo về này dùm t sd để bên javascript
+                    int giamGia = 0; 
+
+                    if (khachhang.Role == "Bac")
+                    {
+                        giamGia = (int)(hoadon.TongTien * 0.05);
+                      
+                    }
+                
+                    else if (khachhang.Role == "Vang")
+                    {
+                        giamGia = (int)(hoadon.TongTien * 0.10);
+                        
+                    }
+
+                    hoadon.TongTien -= giamGia;
+
+                    _context.Add(hoadon);
+                    _context.SaveChanges();
+                    _context.AddRange(ctsp);
+                    _context.SaveChanges();
+
+                    transaction.Commit();
+                    HttpContext.Session.Set<List<CartItem>>(MySetting.Cart_key, new List<CartItem>());
+               
+
+                    return View("Success");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+        #region Paypal payment
+        [Authorize]
 		[HttpPost("/Cart/create-paypal-order")]
 		public async Task<IActionResult> CreatePaypalOrder(CancellationToken cancellationToken)
 		{
@@ -258,39 +326,31 @@ namespace Manage_Coffee.Controllers
 			{
 				return BadRequest("Giỏ hàng trống.");
 			}
-
-			// Thông tin đơn hàng gửi qua Paypal
 			var tongTien = cart.Sum(p => p.Total).ToString();
 			var donViTienTe = "USD";
 			var maDonHangThamChieu = "DH" + DateTime.Now.Ticks.ToString();
 			
 			try
-			{
-				// Tạo đơn hàng PayPal
+			{ 
 				var response = await _paypalClient.CreateOrder(tongTien, donViTienTe, maDonHangThamChieu);
 				return Ok(response);
 			}
 			catch (Exception ex)
 			{
-				var error = new { ex.GetBaseException().Message };
-				return BadRequest(error);
-			}
-		}
+                var error = JsonConvert.SerializeObject(new { ex.GetBaseException().Message });
+                return BadRequest(error);
 
-
+            }
+        }
 		[Authorize]
 		[HttpPost("/Cart/capture-paypal-order")]
-		public async Task<IActionResult> CapturePaypalOrder(string orderID, CancellationToken cancellationToken,CheckoutKH checkoutKH)
+		public async Task<IActionResult> CapturePaypalOrder(string orderID, CancellationToken cancellationToken,CheckoutKH checkoutKH, string MaKm, decimal totalValue)
 		{
+            Console.WriteLine("CapturePaypalOrder");
 			try
 			{
 				// Gọi PayPal API để capture order
 				var response = await _paypalClient.CaptureOrder(orderID);
-
-
-				// Thanh toán thành công, tiến hành lưu hóa đơn
-
-				// Lấy giỏ hàng từ session
 				List<CartItem> cart = HttpContext.Session.Get<List<CartItem>>(MySetting.Cart_key);
 
 				if (cart == null || cart.Count == 0)
@@ -298,23 +358,26 @@ namespace Manage_Coffee.Controllers
 					return BadRequest("Giỏ hàng trống");
 				}
 
-				// Lấy thông tin khách hàng từ Claims hoặc Session
-				var makh = HttpContext.Session.GetString("UserPhone");
-				if (string.IsNullOrEmpty(makh))
+                // Lấy thông tin khách hàng từ Claims hoặc Session
+                var makh = " ";
+                if (HttpContext.Session.GetString("UserName") == null)
+                {
+                    var makhClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "MAKH");
+                    makh = makhClaim?.Value;
+                }
+                else
+                {
+                    makh = HttpContext.Session.GetString("UserPhone");
+                }
+                if (string.IsNullOrEmpty(makh))
 				{
-					var makhClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "MAKH");
-					makh = makhClaim?.Value;
-				}
-
-				if (string.IsNullOrEmpty(makh))
-				{
-					return BadRequest("Mã khách hàng không tồn tại");
+					return BadRequest("ma khong ton tai");
 				}
 
 				var khachhang = _context.KhachHangs.SingleOrDefault(kh => kh.MaKh == makh);
 				if (khachhang == null)
 				{
-					return BadRequest($"Không tìm thấy khách hàng với mã: {makh}");
+					return BadRequest($"khong tim thay: {makh}");
 				}
 
 				// Tạo hóa đơn
@@ -322,18 +385,17 @@ namespace Manage_Coffee.Controllers
 				{
 					MaPhieuonl = makh + DateTime.Now,
 					MaKh = makh,
-					DiaChi = checkoutKH.DiaChi ?? khachhang.Diachi,
+					DiaChi = khachhang.Diachi,
 					Ngaygiodat = DateTime.Now,
-					Ptnh = "GRAB", // Hoặc thay đổi theo phương thức giao hàng bạn muốn
-					Pttt = "PayPal", // Thanh toán bằng PayPal
-					TrangThai = true, // Đơn hàng đã thanh toán thành công
-					MaKm = "KM001", // Có thể lấy mã khuyến mãi nếu có
-					MaCn = "CN001", // Mã chi nhánh
-					TongTien = cart.Sum(item => (item.Dongia + item.TriGia) * item.Soluong),
+					Ptnh = "GRAB",
+					Pttt = "PayPal",
+					TrangThai = true,
+					MaKm = MaKm,
+					MaCn = "CN001",
+					//TongTien = cart.Sum(item => (item.Dongia + item.TriGia) * item.Soluong),
+					TongTien = (int)totalValue,
 					TienShip = 20 // Hoặc tính toán phí ship từ trước
 				};
-
-				// Tạo danh sách chi tiết sản phẩm
 				var ctsp = new List<Ctsponl>();
 				foreach (var item in cart)
 				{
@@ -349,21 +411,14 @@ namespace Manage_Coffee.Controllers
 						Tongtien = (item.Dongia + item.TriGia) * item.Soluong
 					});
 				}
-
-				// Bắt đầu giao dịch
 				using (var transaction = _context.Database.BeginTransaction())
 				{
 					try
 					{
-						// Lưu hóa đơn
 						_context.Add(hoadon);
 						_context.SaveChanges();
-
-						// Lưu chi tiết hóa đơn
 						_context.AddRange(ctsp);
 						_context.SaveChanges();
-
-						// Commit giao dịch
 						transaction.Commit();
 					}
 					catch (Exception ex)
@@ -377,14 +432,18 @@ namespace Manage_Coffee.Controllers
 				// Xóa giỏ hàng sau khi thanh toán thành công
 				HttpContext.Session.Set<List<CartItem>>(MySetting.Cart_key, new List<CartItem>());
 
-				return Ok(response); // Trả về phản hồi thành công
-			}
-			catch (Exception ex)
+                return new JsonResult(response);
+                // Trả về phản hồi thành công
+            }
+            catch (Exception ex)
 			{
-				var error = new { ex.GetBaseException().Message };
-				return BadRequest(error);
-			}
-		}
+                var error = JsonConvert.SerializeObject(new { ex.GetBaseException().Message });
+                return BadRequest("error");
+
+            }
+
+        }
+
 		#endregion
 	}
 }

@@ -80,6 +80,8 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 // Lưu thông tin vào session
                 HttpContext.Session.SetString("NhanVienSdt", nhanVien.Sdt.ToString());
                 HttpContext.Session.SetString("NhanVienChucVu", nhanVien.Chucvu);
+                HttpContext.Session.SetString("Ten", nhanVien.Ten);
+                HttpContext.Session.SetString("Manv", nhanVien.MaNv);
 
                 if (nhanVien.Chucvu == "Phục vụ")
                 {

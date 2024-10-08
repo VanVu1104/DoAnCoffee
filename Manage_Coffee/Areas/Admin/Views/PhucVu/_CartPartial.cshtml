@@ -1,0 +1,29 @@
+﻿@model List<Manage_Coffee.Models.CartItem>
+
+<h4>Giỏ hàng</h4>
+@if (Model != null && Model.Any())
+{
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>
+                @*   @item.Ten - Số lượng: @item.Soluong - Giá: @item.Dongia * @item.Soluong *@
+                Tên sản phẩm: <strong>@item.Ten</strong> <br />
+                Kích thước: <strong>@item.SizeID</strong> <br /> <!-- Hiển thị ID hoặc tên size nếu có -->
+                Trị giá: <strong>@item.TriGia</strong> <br /> <!-- Hiển thị ID hoặc tên size nếu có -->
+                Số lượng: <strong>@item.Soluong</strong> <br />
+                Giá đơn vị: @item.Dongia VND <br />
+                Tổng cộng: <strong>@(item.Dongia * item.Soluong + item.TriGia) VND</strong>
+            </li>
+            <hr />
+
+        }
+        <p><strong>Tổng số tiền: @(Model.Sum(i => i.Dongia * i.Soluong + i.TriGia)) VND</strong></p>
+    </ul>
+    <a href="@Url.Action("Checkout", "PhucVu", new { area = "Admin" })" class="btn btn-success">Thanh toán</a>
+
+}
+else
+{
+    <p>Giỏ hàng của bạn hiện đang trống.</p>
+}

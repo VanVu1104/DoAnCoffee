@@ -9,14 +9,14 @@ namespace Manage_Coffee.Models
         public string Ten { get; set; } 
 
         public int Dongia { get; set; }
-        public string Anh { get; set; } 
+        //public string Anh { get; set; } 
 
         public int Soluong { get; set; }
 
-		
+		public IEnumerable<DanhMucKm> Discounts { get; set; }
 
-			// Thêm Size vào CartItem
-			public string SizeID { get; set; }
+		// Thêm Size vào CartItem
+		public string SizeID { get; set; }
 			public string SizeName { get; set; }
 		    public int TriGia { get; set; }
             public string Ghichu { get; set; }
@@ -32,7 +32,7 @@ namespace Manage_Coffee.Models
             Ten = sanPham.Ten;
             Dongia = sanPham.Dongia;
             Soluong = 1;
-            Anh = sanPham.Anh;
+            //Anh = sanPham.Anh;
 		    SizeID = size.MaSize;  
 	    	SizeName = size.Ten;
             TriGia = size.TriGia;

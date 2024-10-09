@@ -31,11 +31,11 @@
 					@foreach (var item in Model.CartItems)
 					{
 						<tr>
-							<th scope="row">
-								<div class="d-flex align-items-center">
-									<img src="~/Hinh/HangHoa/@item.Anh" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="@item.Ten">
-								</div>
-							</th>
+							@*  <th scope="row">
+							 	<div class="d-flex align-items-center">
+							 		<img src="~/Hinh/HangHoa/@item.Anh" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="@item.Ten">
+							 	</div>
+							 </th> *@
 							<td>
 								<p class="mb-0 mt-4">
 									<a asp-action="Detail" asp-controller="SanPham" asp-route-id="@item.ProductID">
@@ -47,19 +47,7 @@
 								<p class="mb-0 mt-4">$ @item.Dongia</p>
 							</td>
 							<td>
-								@*   <div class="input-group quantity mt-4" style="width: 100px;">
-								  	<div class="input-group-btn">
-								  		<button class="btn btn-sm btn-minus rounded-circle bg-light border">
-								  			<i class="fa fa-minus"></i>
-								  		</button>
-								  	</div>
-								  	<input type="text" class="form-control form-control-sm text-center border-0" value="@item.Soluong">
-								  	<div class="input-group-btn">
-								  		<button class="btn btn-sm btn-plus rounded-circle bg-light border">
-								  			<i class="fa fa-plus"></i>
-								  		</button>
-								  	</div>
-								  </div> *@
+								
 								  <div class="cart_sl">
 								
 										  <a class="btn btn-primary btn-sm" asp-controller="Cart" asp-action="Increase" asp-route-id="@item.ProductID">+

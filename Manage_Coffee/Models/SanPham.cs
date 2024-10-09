@@ -15,7 +15,7 @@ public partial class SanPham
 
     public string Mota { get; set; } = null!;
 
-    public string Anh { get; set; } = null!;
+    public string Anh { get; set; }
 
     public string? Maloai { get; set; }
 

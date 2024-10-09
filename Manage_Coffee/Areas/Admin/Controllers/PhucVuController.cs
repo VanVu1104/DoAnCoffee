@@ -17,7 +17,7 @@ namespace Manage_Coffee.Areas.Admin.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(string keyword)
         {
             // Lấy thông tin nhân viên từ Session
             var TenNhanVien = HttpContext.Session.GetString("Ten");
@@ -27,16 +27,26 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 return RedirectToAction("Login", "AccountAdmin", new { area = "Admin" });
             }
             // Load danh sách sản phẩm khi truy cập vào trang Index
-            var products = LoadProducts();
+            var products = LoadProducts(keyword);
 
             ViewBag.TenNhanVien = TenNhanVien;
             return View(products);
         }
         // Phương thức load sản phẩm từ cơ sở dữ liệu
-        private List<SanPham> LoadProducts()
+        private List<SanPham> LoadProducts(string keyword)
         {
-            // Truy vấn danh sách sản phẩm từ database
-            var products = _context.SanPhams.ToList();
+            var products = string.IsNullOrEmpty(keyword)
+                 ? _context.SanPhams.ToList()
+                 : _context.SanPhams.Where(p => p.Ten.ToLower().Contains(keyword.ToLower())).ToList();
+            // Kiểm tra nếu không tìm thấy sản phẩm nào
+            if (products == null || products.Count == 0)
+            {
+                ViewBag.Message = "Không tìm thấy sản phẩm nào.";
+            }
+            else
+            {
+                ViewBag.Message = null; // Reset thông báo nếu có sản phẩm
+            }
             return products;
         }
         // Phương thức để thêm sản phẩm vào giỏ hàng
@@ -78,14 +88,14 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             // Trả về partial view của giỏ hàng để cập nhật
             return PartialView("_CartPartial", cart);
         }
-        [Route("Logout")]
-        public IActionResult Logout()
+        [Route("Logout-admin")]
+        public IActionResult LogoutAdmin()
         {
             // Xóa tất cả session của người dùng
             HttpContext.Session.Clear();
 
             // Điều hướng về trang login hoặc trang chính sau khi logout
-            return RedirectToAction("Login", "Account", new { area = "Admin" });
+            return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
         }
         // Thêm hành động Checkout để hiển thị trang Checkout
         [Route("Checkout")]
@@ -130,6 +140,7 @@ namespace Manage_Coffee.Areas.Admin.Controllers
 
             // Lấy thông tin nhân viên từ Session
             var maNv = HttpContext.Session.GetString("Manv");
+            var maCn = HttpContext.Session.GetString("Macn");
 
             // Tạo đối tượng PhieuOrder
             var phieuOrder = new PhieuOrder
@@ -137,11 +148,11 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 MaOrder = Guid.NewGuid().ToString().Substring(0, 5),
                 Ngaygiodat = DateTime.Now,
                 Soban = soban,  // Số bàn từ người dùng
-                Tongtien = cart.Sum(c => c.Dongia * c.Soluong + c.TriGia),
+                Tongtien = cart.Sum(c => (c.Dongia + c.TriGia) * c.Soluong ),
                 Trangthai = true,  // Thanh toán thành công
                 Pttt = pttt,  
                 MaNv = maNv,  
-                MaCn = maNv,  
+                MaCn = maCn,  
                 MaKm = null,  
                 Ten = tenKhachHang,  
                 Sdt = sdt,
@@ -150,14 +161,15 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             {
                 var ctsanPham = new CtsanPham
                 {
-                    MaSize = item.SizeID,
                     MaOrder = phieuOrder.MaOrder,  // Liên kết với mã đơn hàng
                     MaSp = item.ProductID,  // Mã sản phẩm
                     Soluong = item.Soluong,  // Số lượng
                     Gia = item.Dongia,  // Đơn giá sản phẩm
-                    MaKh = maNv  
-                };
+                    MaKh = maNv,
+                    MaSize = item.SizeID,
+                    TongTien = item.Soluong * (item.Dongia + item.TriGia),
 
+                };
                 _context.CtsanPhams.Add(ctsanPham);
             }
             // Thêm đơn hàng vào database
@@ -176,6 +188,8 @@ namespace Manage_Coffee.Areas.Admin.Controllers
         {
             return View();
         }
+       
+
     }
 
 }

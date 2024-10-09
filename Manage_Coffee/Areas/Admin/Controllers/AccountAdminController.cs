@@ -63,13 +63,13 @@ namespace Manage_Coffee.Areas.Admin.Controllers
         }
         [Route("Login-admin")]
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult LoginAdmin()
         {
             return View();
         }
         [Route("Login-admin")]
         [HttpPost]
-        public IActionResult Login(int sdt, string password)
+        public IActionResult LoginAdmin(int sdt, string password)
         {
             // Tìm nhân viên dựa trên số điện thoại và mật khẩu
             var nhanVien = _context.NhanViens
@@ -82,6 +82,11 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 HttpContext.Session.SetString("NhanVienChucVu", nhanVien.Chucvu);
                 HttpContext.Session.SetString("Ten", nhanVien.Ten);
                 HttpContext.Session.SetString("Manv", nhanVien.MaNv);
+                if(nhanVien.MaCn == null)
+                {
+                    nhanVien.MaCn = "CN001";
+                }
+                HttpContext.Session.SetString("Macn", nhanVien.MaCn);
 
                 if (nhanVien.Chucvu == "Phục vụ")
                 {
@@ -97,5 +102,6 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             ViewBag.Error = "Số điện thoại hoặc mật khẩu không chính xác";
             return View();
         }
+        
     }
 }

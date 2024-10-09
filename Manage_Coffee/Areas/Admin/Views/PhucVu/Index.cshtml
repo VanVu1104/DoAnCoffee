@@ -6,9 +6,24 @@
 <div class="nhan-vien-info">
     <h4>Thông tin đăng nhập</h4>
     <p><strong>Name:</strong> @ViewBag.TenNhanVien</p>
-    <a href="@Url.Action("Logout", "Account", new { area = "Admin" })" class="btn btn-danger">Đăng xuất</a>
+    <a href="@Url.Action("LogoutAdmin", "PhucVu", new { area = "Admin" })" class="btn btn-danger">Đăng xuất</a>
 </div>
+<!-- Thêm form tìm kiếm -->
+<div class="search-bar">
+    <form asp-action="LoadProducts" method="get" class="search-form">
+        <input type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." class="form-control" style="display:inline-block; width:70%;" />
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    </form>
+</div>
+
 <div class="row">
+    <!-- Hiển thị thông báo nếu không tìm thấy sản phẩm -->
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-warning">
+            @ViewBag.Message
+        </div>
+    }
     <!-- Phần danh sách sản phẩm -->
     <div class="col-md-8">
         <h2>Danh sách sản phẩm</h2>
@@ -70,6 +85,7 @@
             success: function (result) {
                 // Cập nhật phần hiển thị giỏ hàng với nội dung mới
                 $('#cart').html(result);
+                alert('Sản phẩm đã được thêm vào giỏ hàng.'); // Thông báo thành công
             },
             error: function () {
             alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');

@@ -13,12 +13,12 @@
                 Trị giá: <strong>@item.TriGia</strong> <br /> <!-- Hiển thị ID hoặc tên size nếu có -->
                 Số lượng: <strong>@item.Soluong</strong> <br />
                 Giá đơn vị: @item.Dongia VND <br />
-                Tổng cộng: <strong>@(item.Dongia * item.Soluong + item.TriGia) VND</strong>
+                Tổng cộng: <strong>@( item.Soluong * (item.Dongia + item.TriGia)) VND</strong>
             </li>
             <hr />
 
         }
-        <p><strong>Tổng số tiền: @(Model.Sum(i => i.Dongia * i.Soluong + i.TriGia)) VND</strong></p>
+        <p><strong>Tổng số tiền: @(Model.Sum(i => i.Soluong * (i.Dongia + i.TriGia))) VND</strong></p>
     </ul>
     <a href="@Url.Action("Checkout", "PhucVu", new { area = "Admin" })" class="btn btn-success">Thanh toán</a>
 

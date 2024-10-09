@@ -22,7 +22,5 @@ public partial class KhachHang
 
     public virtual ICollection<ChitietDanhGium> ChitietDanhGia { get; set; } = new List<ChitietDanhGium>();
 
-    public virtual ICollection<PhieuOrder> PhieuOrders { get; set; } = new List<PhieuOrder>();
-
     public virtual ICollection<Phieudhonl> Phieudhonls { get; set; } = new List<Phieudhonl>();
 }

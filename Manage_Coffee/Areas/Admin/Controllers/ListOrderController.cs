@@ -27,8 +27,6 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             {
                 return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
             }
-            var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
-            ViewBag.AntiForgeryToken = tokens.RequestToken;
             var orders = LoadOrders();
 
             if (orders == null || !orders.Any()) // Kiểm tra nếu không có đơn hàng
@@ -38,55 +36,96 @@ namespace Manage_Coffee.Areas.Admin.Controllers
 
             return View(orders);
         }
-
         public List<Phieudhonl> LoadOrders()
         {
-            var listOrders = _context.Phieudhonls.ToList();
+            var listOrders = _context.Phieudhonls.Where(c => c.TrangThai == true || c.TrangThai == null).ToList();
             return listOrders; // Trả về danh sách đơn hàng
         }
 
+        //Load các đơn hàng chờ xác nhận
+        [Route("List-pending-order")]
+        public IActionResult PendingOrders()
+        {
+            var TenNhanVien = HttpContext.Session.GetString("Ten");
+            if (string.IsNullOrEmpty(TenNhanVien))
+            {
+                return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
+            }
+            var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+            ViewBag.AntiForgeryToken = tokens.RequestToken;
+            var orders = LoadOrdersPending();
+
+            if (orders == null || !orders.Any()) // Kiểm tra nếu không có đơn hàng
+            {
+                ViewBag.Message = "Không có đơn đặt hàng nào.";
+            }
+
+            return View(orders);
+        }
+        //Load các đơn hàng đang chờ xác nhận
+        public List<Phieudhonl> LoadOrdersPending()
+        {
+            var listOrdersPending = _context.Phieudhonls.Where(c => c.TrangThai == false).ToList();
+            return listOrdersPending; // Trả về danh sách đơn hàng
+        }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ConfirmOrder([FromBody] string orderId)
         {
+            if (string.IsNullOrEmpty(orderId))
+            {
+                return Json(new { success = false, message = "Mã đơn hàng không hợp lệ." });
+            }
             var order = _context.Phieudhonls.FirstOrDefault(o => o.MaPhieuonl == orderId);
             if (order == null)
             {
-                return Json(new { success = false, message = "Đơn hàng không tồn tại." });
+                return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
             }
-
-            // Cập nhật trạng thái đơn hàng từ false thành true
-            order.TrangThai = true;
-            try
+            if (order.TrangThai == false)
             {
-                _context.SaveChanges();
-                return Json(new { success = true });
+                order.TrangThai = true; // Đã xác nhận
+                try
+                {
+                    _context.SaveChanges();
+                    return Json( new { success = true });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { success = false, message = "Lỗi khi cập nhật đơn hàng: " + ex.Message });
+                }
             }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Lỗi khi cập nhật đơn hàng: " + ex.Message });
-            }
+            
+            return Json(new { success = false, message = "Đơn hàng đã được xử lý." });
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CancelOrder([FromBody] string orderId)
         {
+            if (string.IsNullOrEmpty(orderId))
+            {
+                return Json(new { success = false, message = "Mã đơn hàng không hợp lệ." });
+            }
             var order = _context.Phieudhonls.FirstOrDefault(o => o.MaPhieuonl == orderId);
             if (order == null)
             {
-                return Json(new { success = false, message = "Đơn hàng không tồn tại." });
+                return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
             }
-
-            // Cập nhật trạng thái đơn hàng thành null hoặc trạng thái "Đã hủy"
-            order.TrangThai = null;
-            try
+            if (order.TrangThai == false)
             {
-                _context.SaveChanges();
-                return Json(new { success = true });
+                order.TrangThai = null; // Đã hủy
+                try
+                {
+                    _context.SaveChanges();
+                    return Json(new { success = true });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { success = false, message = "Lỗi khi cập nhật đơn hàng: " + ex.Message });
+                }
             }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Lỗi khi cập nhật đơn hàng: " + ex.Message });
-            }
+            return Json(new { success = false, message = "Đơn hàng đã được xử lý." });
         }
-
     }
 }

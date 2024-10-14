@@ -8,6 +8,7 @@
     <p><strong>Name:</strong> @ViewBag.TenNhanVien</p>
     <a href="@Url.Action("LogoutAdmin", "PhucVu", new { area = "Admin" })" class="btn btn-danger">Đăng xuất</a>
     <a href="@Url.Action("Orders", "ListOrder", new { area = "Admin" })" class="btn btn-danger">Danh sách đơn hàng</a>
+    <a href="@Url.Action("PendingOrders", "ListOrder", new { area = "Admin" })" class="btn btn-danger">Danh sách đơn hàng chờ xác nhận</a>
     <a href="@Url.Action("Index", "SanPhamsAdmin", new { area = "Admin" })" class="btn btn-danger">Danh sách sản phẩm</a>
 </div>
 <!-- Thêm form tìm kiếm -->

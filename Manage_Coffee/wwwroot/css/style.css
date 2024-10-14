@@ -1,0 +1,483 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,200;1,400;1,500&display=swap');
+/*header*/
+body {
+    box-sizing: border-box;
+    font-family: "poppins", sans-serif;
+    cursor: pointer;
+    font-size: revert-layer;
+}
+
+#wrapped {
+    /*Kich thuoc man hinh la 1280 x 720*/
+    width: 100%;
+    height: 90vh;
+}
+
+#header {
+    background-color: #07522E;
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 20px;
+}
+
+#menu {
+    list-style: none;
+    display: flex;
+}
+
+    #menu .item {
+        margin: 0px 25px;
+    }
+
+        #menu .item a {
+            color: white;
+            text-decoration: none;
+            font-size: 21px;
+        }
+
+#actions {
+    display: flex;
+    padding-left: 30px;
+}
+
+    #actions .item {
+        margin-left: 30px;
+        color: white;
+        padding-right: 20px;
+    }
+
+        #actions .item img {
+            padding: 0 10px 0 10px;
+        }
+
+i {
+    margin: 60px 40px 40px 0;
+    color: white;
+}
+
+/*dang ki, dang nhap*/
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: whitesmoke;
+    width: 220px;
+    /*box-shadow: 0px 0px 0px 0px*/ /*rgba(0,0,0,0.2)*/ /*;*/
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+    z-index: 1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+#container-1 {
+    background-image: url('../css/img/logo2.png');
+    background-repeat: no-repeat;
+    width: auto;
+    text-align: center;
+    padding-top: 120px;
+    padding-bottom: 120px;
+    background-size: cover;
+    display: flex;
+    justify-content: right;
+}
+
+.form-control {
+    height: 48px;
+    width: 460px;
+    border-radius: 8px;
+    padding-left: 5px;
+}
+
+/*Banner trinh chieu picture dong*/
+#wp-banner {
+    max-width: 100%;
+    height: 450px;
+}
+
+#banner {
+    max-width: 100%;
+    height: 450px;
+    display: flex;
+    border-radius: 30px;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.size-banner {
+    width: 100%;
+    height: 450px;
+}
+
+
+/*#container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 1200px;
+    height: 400px;
+}*/
+
+/*about (Trang Chu) */
+#wp-about {
+    padding-top: 20px;
+    padding-bottom: 40px;
+    padding-left: 60px;
+    padding-right: 60px;
+}
+
+#about {
+    display: inline-flex;
+    width: 100%;
+    height: 600px;
+}
+
+    #about .left {
+        width: 40%;
+    }
+
+    #about .left {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        background-color: white;
+    }
+
+    #about .right {
+        width: 60%;
+    }
+
+    #about .right {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: left;
+        padding-left: 20px;
+        color: #2C2A28;
+        background-color: white;
+    }
+
+
+    #about .left img {
+        width: 100%;
+        height: 570px;
+    }
+
+    #about .right h1 {
+        text-align: center;
+        padding-bottom: 10px;
+        font-size: 45px;
+    }
+
+    #about .right h2 {
+        text-align: center;
+        font-size: 31px;
+        color: #2C2A28;
+    }
+
+    #about .right p {
+        text-align: left;
+        font-size: 20px;
+        color: #2C2A28;
+    }
+
+
+#chuyennha {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+    #chuyennha h2 {
+        text-align: center;
+        font-size: 35px;
+    }
+
+#list-chuyennha {
+    padding-top: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    list-style: none;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+    #list-chuyennha .item2 img {
+        width: 320px;
+        height: 280px;
+        display: block;
+        margin: 0px auto;
+        border-radius: 8px;
+    }
+
+    #list-chuyennha .item2 {
+        /*        text-align: center;
+       */
+        /*font-size: 22px;*/
+        width: 310px;
+        height: 280px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+
+        #list-chuyennha .item2 .name {
+            text-align: left;
+            font-family: "poppins", sans-serif;
+            color: #07522E;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 21px;
+        }
+
+        #list-chuyennha .item2 .detail {
+            text-align: left;
+            color: #2C2A28;
+            font-size: 17px;
+        }
+
+#hinh :hover {
+    transform: translateY(-5px); /* Nổi lên */
+    box-shadow: 0 10px 15px 0.2; /* Đổ bóng để tăng hiệu ứng nổi */
+}
+
+#hethong {
+    padding-left: 25px;
+    padding-right: 55px;
+}
+
+    #hethong h2 {
+        text-align: center;
+        margin-bottom: 50px;
+        font-size: 35px;
+    }
+
+#list-hethong {
+    display: flex;
+    list-style: none;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap; /* Cho phép hình ảnh gấp xuống hàng khi màn hình nhỏ */
+}
+
+    #list-hethong .item2 img {
+        width: 350px;
+        height: 300px;
+        display: block;
+    }
+
+    #list-hethong .item2 {
+        width: 350px;
+        height: 300px;
+        margin-bottom: 20px;
+    }
+
+/* Container chứa các button */
+.button-hethong {
+    margin-left:100px;
+    display: flex;
+    justify-content: center; /* Căn giữa các button trong container */
+    gap: 40px; /* Khoảng cách giữa các button */
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* Cho phép button xuống hàng khi màn hình nhỏ */
+}
+
+/* Styling cho button */
+.custom-button {
+    background-color: #07522E; /* Màu nền xanh lá */
+    color: #FFFFFF; /* Màu chữ trắng */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px; /* Bo tròn góc */
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Hiệu ứng chuyển động */
+}
+
+    .custom-button:hover {
+        transform: translateY(-5px); /* Nút nổi lên khi hover */
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Hiệu ứng bóng */
+    }
+
+    .custom-button:focus {
+        outline: none; /* Xóa bỏ viền mặc định khi nhấn vào nút */
+    }
+/* Media Queries bổ sung cho responsive */
+
+@media (max-width: 1200px) {
+    #list-chuyennha {
+        justify-content: center; /* Căn giữa nội dung */
+    }
+
+        #list-chuyennha .item2 {
+            width: 280px; /* Giảm chiều rộng cho các mục */
+        }
+
+            #list-chuyennha .item2 img {
+                width: 280px; /* Giảm kích thước hình ảnh */
+                height: auto; /* Đặt chiều cao tự động */
+            }
+
+    #hethong {
+        padding-left: 15px; /* Giảm padding cho không gian hẹp hơn */
+        padding-right: 15px; /* Giảm padding cho không gian hẹp hơn */
+    }
+
+        #hethong h2 {
+            font-size: 32px; /* Giảm kích thước tiêu đề */
+        }
+}
+
+@media (max-width: 640px) {
+    #chuyennha h2 {
+        font-size: 28px; /* Giảm kích thước tiêu đề */
+    }
+
+    #list-chuyennha .item2 {
+        width: 90%; /* Chiếm 90% chiều rộng */
+    }
+
+        #list-chuyennha .item2 img {
+            width: 100%; /* Chiếm 100% chiều rộng */
+            height: auto; /* Đặt chiều cao tự động */
+        }
+
+    #hethong h2 {
+        font-size: 26px; /* Giảm kích thước tiêu đề */
+    }
+
+    #list-hethong .item2 {
+        width: 90%; /* Chiếm 90% chiều rộng */
+    }
+
+        #list-hethong .item2 img {
+            width: 100%; /* Chiếm 100% chiều rộng */
+            height: auto; /* Đặt chiều cao tự động */
+        }
+
+    .custom-button {
+        font-size: 14px; /* Giảm kích thước chữ nút */
+        padding: 8px 15px; /* Giảm padding cho nút */
+    }
+}
+
+@media (max-width: 480px) {
+    #chuyennha {
+        padding-left: 10px; /* Giảm padding cho không gian hẹp hơn */
+        padding-right: 10px; /* Giảm padding cho không gian hẹp hơn */
+    }
+
+    #list-chuyennha .item2 {
+        margin-bottom: 20px; /* Giảm khoảng cách dưới */
+    }
+}
+
+
+/* Footer Styles */
+#footer {
+    background-color: #292929;
+    color: #FFFFFF;
+    padding: 20px 0;
+    text-align: left;
+    font-family: Arial, sans-serif;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+/* Mỗi phần trong footer */
+.footer-section {
+    width: 30%;
+    /*    margin-bottom: 20px;*/
+}
+
+    .footer-section h3 {
+        color: #FFFFFF;
+        font-size: 27px;
+        margin-bottom: 17px;
+    }
+
+    .footer-section p {
+        color: white;
+    }
+
+/* Form phản hồi khách hàng */
+.feedback-form {
+    display: flex;
+    align-items: stretch; /* Giúp phần input và button cùng chiều cao */
+    width: 100%; /* Đảm bảo form chiếm toàn bộ không gian */
+}
+
+    .feedback-form input {
+        padding: 10px;
+        width: 65%;
+        height: 55%;
+        border: none;
+        border-radius: 5px 0 0 5px;
+        outline: none;
+        font-size: 14px;
+        box-sizing: border-box; /* Đảm bảo padding không làm ảnh hưởng kích thước */
+    }
+
+    .feedback-form button {
+        background-color: #07522E;
+        color: #FFFFFF;
+        border: none;
+        padding: 10px 10px;
+        border-radius: 0 5px 5px 0;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 38px; /* Tự điều chỉnh chiều cao theo input */
+        box-sizing: border-box; /* Đảm bảo padding không làm ảnh hưởng kích thước */
+    }
+
+        .feedback-form button i {
+            padding-bottom: 17px;
+            /*            margin-top: 0px;*/
+            margin-right: 10px;
+        }
+
+        .feedback-form button:hover {
+            background-color: #064A2B;
+        }
+
+/* Copyright Section */
+.footer-copyright {
+    text-align: center;
+    color: #CCCCCC;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+    }
+}

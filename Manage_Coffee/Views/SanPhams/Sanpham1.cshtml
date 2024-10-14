@@ -4,53 +4,68 @@
 @{
     ViewData["Title"] = "Danh sách sản phẩm";
 }
+<link rel="stylesheet" href="~/css/StyleSheet.css" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-<h1>Danh sách sản phẩm</h1>
-
-<!-- Nút tạo sản phẩm mới -->
-<p>
-    <a asp-action="Create1">Create New</a>
-</p>
+@*  <script>
+     $(document).ready(function () {
+         $('.post-module').hover(
+             function () {
+                 $(this).find('.description').stop().slideDown(300); // Slide down the description on hover
+             },
+             function () {
+                 $(this).find('.description').stop().slideUp(300); // Slide up when not hovered
+             }
+         );
+     });
+ </script> *@
 
 <!-- Hiển thị danh sách loại sản phẩm -->
-<div style="background-color: gray; display: block;">
+<div>
     @await Component.InvokeAsync("Category")
 </div>
 
+<div class="search-container">
+    <p>Tìm kiếm</p>
+    <div class="search-box">
+        <input type="text" placeholder="Tên sản phẩm...">
+        <button type="submit"><i class="fas fa-search"></i></button>
+    </div>
+    <p>Tìm theo giá</p>
+    <div class="search-box">
+        <input type="text" placeholder="Nhập giá sản phẩm...">
+        <button type="submit"><i class="fas fa-search"></i></button>
+    </div>
+</div>
 <!-- Bảng hiển thị danh sách sản phẩm -->
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.First().Ten)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Dongia)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Dvt)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Mota)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Anh)</th>
-            <th>@Html.DisplayNameFor(model => model.First().MaToppingNavigation.Ten)</th>
-            <th>@Html.DisplayNameFor(model => model.First().MaloaiNavigation.Ten)</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+<div class="product-list">
+    @foreach (var item in Model)
+    {
+        <div class="product-card">
+            <a asp-action="Details" asp-route-id="@item.MaSp">
+                <div class="diuyn">
+                    <td>
+                        <img src="~/css/img/@item.Anh" />
+                    </td>
+                </div>
+                <div class="detail">
+                    <h4 class="card_name">@Html.DisplayFor(modelItem => item.Ten)</h4>
+                    <p class="card_price">@Html.DisplayFor(modelItem => item.Dongia) VND</p>
 
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Ten)</td>
-                <td>@Html.DisplayFor(modelItem => item.Dongia)</td>
-                <td>@Html.DisplayFor(modelItem => item.Dvt)</td>
-                <td>@Html.DisplayFor(modelItem => item.Mota)</td>
-                <td><img src="@Url.Content(item.Anh)" alt="@item.Ten" width="100" height="100" /></td>
-                <td>@Html.DisplayFor(modelItem => item.MaToppingNavigation.Ten)</td>
-                <td>@Html.DisplayFor(modelItem => item.MaloaiNavigation.Ten)</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.MaSp">Details</a> |
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
+                    <button class="cart_product">
+                        <span class="material-icons">shopping_cart</span> <!-- Biểu tượng giỏ hàng -->
+                    </button>
+                </div>
+            </a>
+        </div>
+    }
+</div>
 
 <!-- Phân trang -->
-@Html.PagedListPager(Model, page => Url.Action("Sanpham1", new { category = ViewBag.Query["category"], page }))
+<div style="display: flex; text-align: center; justify-content: center;">Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount</div>
+<div class="sotrang" style="padding-bottom: 20px;">
+    @Html.PagedListPager(Model, page => Url.Action("Sanpham1", new { category = ViewBag.Query["category"], page }))
+</div>
+

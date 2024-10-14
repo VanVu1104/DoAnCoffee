@@ -1,8 +1,96 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <link href="~/css/style.css" rel="stylesheet" />
 }
+<div id="wp-banner" style="margin:10px">
+    <div id="banner">
+        <img src="~/css/img/banner2.png" class="size-banner" />
+    </div>
+</div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="wp-about">
+    <div id="about">
+        <div class="left">
+            <img src="~/css/img/cuahang3.jpg" />
+        </div>
+        <div class="right">
+            <ul>
+                <h1 style=" color:#07522E">GIỚI THIỆU</h1>
+                <h2>Le Petit - Chạm đến hương vị Pháp đích thực</h2>
+                <br />
+                <p>Le Petit là quán cà phê nhỏ xinh mang phong cách Pháp, nằm ở góc yên tĩnh giữa lòng thành phố. Với không gian ấm cúng và hương vị cà phê đậm đà, Le Petit là nơi lý tưởng để bạn thư giãn và tận hưởng những khoảnh khắc bình yên.</p>
+
+                <p>Đội ngũ nhân viên nhiệt tình và chuyên nghiệp sẽ luôn đảm bảo rằng bạn được phục vụ tốt nhất. Le Petit còn nổi tiếng với các loại cà phê đặc biệt được pha chế tỉ mỉ và đậm đà hương vị.</p>
+
+                <p>Le Petit là điểm đến lý tưởng để bạn có thể tận hưởng một ly cà phê ngon, thư giãn và trò chuyện cùng bạn bè hoặc tận hưởng thời gian riêng tư.</p>
+
+                <p>Hãy ghé thăm và khám phá không gian tuyệt vời này!</p>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div id="chuyennha">
+    <h2 style=" color:#07522E">Chuyện Nhà Le Petit</h2>
+
+    <ul id="list-chuyennha" style="margin-bottom:180px">
+        <div class="item2">
+            <div id="hinh"> <img src="~/css/img/cuahangcf.png" /> </div>
+            <div class="name">32 TRƯỜNG SƠN </div>
+            <div class="detail">Tưng bừng khai trương chi nhánh mới tại 32 Trường Sơn, Quận Tân Bình, Thành phố Hồ Chí Minh. Có nhiều ưu đãi hấp dẫn ...</div>
+        </div>
+
+        <div class="item2">
+            <div id="hinh">
+                <img src="~/css/img/tuyendung.jpg" />
+            </div>
+            <div class="name">THÔNG TIN TUYỂN DỤNG</div>
+            <div class="detail">Le Petit cần bạn! Nếu bạn đam mê cà phê và muốn đồng hành lâu dài cùng Le Petit Café, chúng tôi đang tuyển các vị trí sau: 1. Chuyên viên đào tạo ...</div>
+        </div>
+
+        <div class="item2">
+            <div id="hinh">
+                <img src="~/css/img/Untitled-1.jpg" />
+            </div>
+            <div class="name">MINIGAME: TRUNG THU VUI VẦY - QUÀ ĐẦY YÊU THƯƠNG</div>
+            <div class="detail">Khi bài đăng Minigame được thông báo trên Fanpage đến 23:59 phút ngày 05.08.2022</div>
+        </div>
+
+        <div class="item2">
+            <div id="hinh">
+                <img src="~/css/img/duongpho.png" />
+            </div>
+            <div class="name">MINIGAME: TRUNG THU VUI VẦY - QUÀ ĐẦY YÊU THƯƠNG</div>
+            <div class="detail">Khi bài đăng Minigame được thông báo trên Fanpage đến 23:59 phút ngày 05.08.2022</div>
+        </div>
+    </ul>
+</div>
+
+
+<div id="hethong">
+    <h2 style=" color:#07522E">Hệ Thống Cửa Hàng</h2>
+
+    <div class="button-hethong">
+        <button style="width: 200px; height: 70px;" class="custom-button">TÂY NINH(1)</button>
+        <button style="width: 200px; height: 70px; " class="custom-button">LONG AN(1)</button>
+        <button style="width: 200px; height: 70px; " class="custom-button">LONG THÀNH(1)</button>
+        <button style="width: 200px; height: 70px; " class="custom-button">TP HCM(2)</button>
+    </div>
+
+    <ul id="list-hethong" style="margin-bottom:10px">
+        <div class="item2">
+            <img src="~/css/img/cuahangcf.png" />
+        </div>
+        <div class="item2">
+            <img src="~/css/img/ch3.jpg" />
+        </div>
+        <div class="item2">
+            <img src="~/css/img/ch2.jpg" />
+        </div>
+        <div class="item2">
+            <img src="~/css/img/cuahang.jpg" />
+        </div>
+    </ul>
 </div>

@@ -1,92 +1,128 @@
 ﻿@using Manage_Coffee.Models.ViewModels
 @model CartItemViewModel
-
-<div class="container-fluid page-header py-5">
+<link rel="stylesheet" href="~/css/StyleSheet.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="StyleSheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+@* <div class="container-fluid page-header py-5">
 	<h1 class="text-center text-white display-6">Cart</h1>
 	<ol class="breadcrumb justify-content-center mb-0">
 		<li class="breadcrumb-item"><a href="#">Home</a></li>
 		<li class="breadcrumb-item"><a href="#">Pages</a></li>
 		<li class="breadcrumb-item active text-white">Cart</li>
 	</ol>
-</div>
+</div> *@
+
 <!-- Single Page Header End -->
 <!-- Cart Page Start -->
-<div class="container-fluid py-5">
-	<div class="container py-5">
-		<div class="table-responsive">
-			<table class="table">
+<div class="container-cart">
+	<h1>Giỏ hàng</h1>
+	<div class="content-cart">
+		<div class="cart-table">
+			<table>
 				<thead>
 					<tr>
-						<th scope="col">Products</th>
+						@* <th scope="col">Sản phẩm</th>
 						<th scope="col">Name</th>
-						<th scope="col">Price</th>
-						<th scope="col">Quantity</th>
-						<th scope="col">Total</th>
+						<th scope="col">Đơn giá</th>
+						<th scope="col">Số lượng</th>
+						<th scope="col">Tạm tính</th>
 						<th>Size</th>
-					<th>ghichu</th>
+						<th>ghichu</th> *@
+						<th>Sản phẩm</th>
+						<th>Đơn giá</th>
+						<th>Số lượng</th>
+						<th>Tạm tính</th>
 					</tr>
 				</thead>
 				<tbody>
-					@if(Model.CartItems.Count > 0){
-					@foreach (var item in Model.CartItems)
+					@if (Model.CartItems.Count > 0)
 					{
-						<tr>
-							@*  <th scope="row">
-							 	<div class="d-flex align-items-center">
-							 		<img src="~/Hinh/HangHoa/@item.Anh" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="@item.Ten">
-							 	</div>
-							 </th> *@
-							<td>
-								<p class="mb-0 mt-4">
-									<a asp-action="Detail" asp-controller="SanPham" asp-route-id="@item.ProductID">
-										@item.Ten
-									</a>
-								</p>
-							</td>
-							<td>
-								<p class="mb-0 mt-4">$ @item.Dongia</p>
-							</td>
-							<td>
-								
-								  <div class="cart_sl">
-								
-										  <a class="btn btn-primary btn-sm" asp-controller="Cart" asp-action="Increase" asp-route-id="@item.ProductID">+
-										  </a>
-										  <input class="text" type="text" name="quantity" value="@item.Soluong" autocomplete="off" size="1" />
-										<a class="btn btn-primary btn-sm" asp-controller="Cart" asp-action="Decrease" asp-route-id="@item.ProductID">
-												-
-											</a>
-
-										<a class="btn btn-primary btn-sm" asp-controller="Cart" asp-action="Remove" asp-route-id="@item.ProductID">
-											Xóa
+						@foreach (var item in Model.CartItems)
+						{
+							<tr>
+								<td>
+									<div class="product-info">
+										<!-- Remove icon (X) -->
+										<a class="remove" asp-controller="Cart" asp-action="Remove" asp-route-id="@item.ProductID" asp-route-idsize="@item.SizeID">Xoa
+											<i class="fas fa-times"></i>
 										</a>
-								  </div>
-							</td>
-							<td>
-								<p class="mb-0 mt-4">$ @Model.CartItems.Where(X=>X.ProductID == item.ProductID && X.SizeID == item.SizeID).Sum(X=> X.Soluong*(X.Dongia +  X.TriGia)).ToString();
-								</p>
-							</td>
-							
-
-						   <td>@item.SizeName</td>
-						
-							<td>@item.Ghichu</td> 
-						
-						</tr>
+										<!-- Product Image -->
+										<img alt="Matcha latte" height="50" src="https://storage.googleapis.com/a1aa/image/IUAPTETh4ObDJZM4tNdnBSKcx6kHeEuYrI5M9fd5WvbgmGkTA.jpg" width="50" />
+										<!-- Product Name, Size, and Notes -->
+										<div class="product-details">
+											<strong>
+												<a asp-action="Detail" asp-controller="SanPham" asp-route-id="@item.ProductID">
+													@item.Ten
+												</a>
+											</strong>
+											<br />
+											@item.SizeName
+											<br />
+											@item.Ghichu
+										</div>
+									</div>
+								</td>
+								<td>
+									<p>$ @item.Dongia</p>
+								</td>
+								<td>
+									<div class="quantity">
+										<a asp-controller="Cart" asp-action="Increase" asp-route-id="@item.ProductID" asp-route-idsize="@item.SizeID">
+											+
+										</a>
+										<input class="text" type="text" name="quantity" value="@item.Soluong" autocomplete="off" size="1" />
+										<a asp-controller="Cart" asp-action="Decrease" asp-route-id="@item.ProductID"  asp-route-idsize="@item.SizeID" >
+											-
+										</a>
+									</div>
+								</td>
+								<td>
+									<p>
+										$ @Model.CartItems.Where(X => X.ProductID == item.ProductID && X.SizeID == item.SizeID).Sum(X => X.Soluong * (X.Dongia + X.TriGia)).ToString()
+									</p>
+								</td>
+							</tr>
+							@if (item.Kits.Count > 0)
+							{
+								<tr>
+									<td colspan="4">
+										<strong>Kit đã chọn:</strong>
+										<ul>
+											@foreach (var kit in item.Kits)
+											{
+												<li>@kit.MaKitNavigation.Ten + @kit.MaSpNavigation.Ten - @kit.GiaKit VND</li>
+											}
+										</ul>
+									</td>
+								</tr>
+							}
 						}
 					}
 					else
 					{
 						<tr>
-							<td colspan="5">Giỏ hàng rỗng</td>
+							<td>Giỏ hàng rỗng</td>
 						</tr>
 					}
 				</tbody>
 			</table>
-			<td colspan="6"> Grand Total : @Model.GrandTotal.ToString()</td>
 		</div>
-		<div>
-			<a class="btn btn-default" asp-action="Checkout" asp-controller="Cart">Thanh toán </a>
+		<div class="summary">
+			<h4><i class="fas fa-money-check-alt" style="color:#07522E"></i> Tổng cộng</h4>
+			<div class="total">
+				<div>
+					<span>Thành tiền</span>
+					<span class="price">@Model.GrandTotal.ToString()đ</span>
+				</div>
+			</div>
+			@* 			<td colspan="6"> Grand Total : @Model.GrandTotal.ToString()</td>
+			*@
+			<div class="checkout-container">
+				<a class="checkout" asp-action="Checkout" asp-controller="Cart">Thanh toán </a>
+			</div>
 		</div>
+	</div>
+	<div class="continue-shopping">
+		<button><i class="fas fa-arrow-left"></i>Tiếp tục mua sản phẩm</button>
 	</div>
 </div>

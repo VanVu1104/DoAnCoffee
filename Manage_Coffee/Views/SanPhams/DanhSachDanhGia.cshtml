@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Danh sách đánh giá";
+}
+
+<h2>Danh sách đánh giá cho sản phẩm</h2>
+
+@if (ViewBag.DanhSachDanhGia != null && ViewBag.DanhSachDanhGia.Count > 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tên khách hàng</th>
+                <th>Số sao</th>
+                <th>Nhận xét</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var danhGia in ViewBag.DanhSachDanhGia)
+            {
+                <tr>
+                    <td>@danhGia.TenKhachHang</td>
+                    <td>@danhGia.SoSao<i style="margin-bottom:10px;"><img src="~/css/icon/icons8-star-48.png" style="width:36px; height:36px;" /></i></td>
+                    <td>@danhGia.NhanXet</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+}
+
+<a asp-action="Details" asp-route-id="@ViewBag.MaSp" class="btn btn-secondary">Quay lại chi tiết sản phẩm</a>
+

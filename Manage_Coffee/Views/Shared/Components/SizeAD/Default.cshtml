@@ -1,0 +1,16 @@
+﻿@model IEnumerable<Manage_Coffee.Models.Size>
+
+@if (Model != null && Model.Any())
+{
+    <label for="sizes">Chọn kích thước:</label>
+    <select id="sizes" name="idsize">
+        @foreach (var size in Model)
+        {
+            <option value="@size.MaSize">@size.Ten-@size.TriGia</option>
+        }
+    </select>
+}
+else
+{
+    <p>Không có kích thước nào khả dụng.</p>
+}

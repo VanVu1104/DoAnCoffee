@@ -7,6 +7,8 @@
     <h4>Thông tin đăng nhập</h4>
     <p><strong>Name:</strong> @ViewBag.TenNhanVien</p>
     <a href="@Url.Action("LogoutAdmin", "PhucVu", new { area = "Admin" })" class="btn btn-danger">Đăng xuất</a>
+    <a href="@Url.Action("Orders", "ListOrder", new { area = "Admin" })" class="btn btn-danger">Danh sách đơn hàng</a>
+    <a href="@Url.Action("Index", "SanPhamsAdmin", new { area = "Admin" })" class="btn btn-danger">Danh sách sản phẩm</a>
 </div>
 <!-- Thêm form tìm kiếm -->
 <div class="search-bar">
@@ -59,7 +61,7 @@
     <!-- Phần giỏ hàng -->
     <div class="col-md-4">
         <div id="cart">
-            @await Html.PartialAsync("_CartPartial", new List<Manage_Coffee.Models.CartItem>())
+            @await Html.PartialAsync("_CartPartial", ViewBag.Cart as List<Manage_Coffee.Models.CartItem>);
         </div>
     </div>
 </div>
@@ -74,7 +76,27 @@
                 return;
             }
             addToCart(productId,sizeId);
-        });
+        }); 
+    });
+    // Sự kiện tăng số lượng
+    $(document).on('click', '.increase-quantity', function () {
+        var productId = $(this).data('id');
+        var sizeId = $(this).data('size');
+        updateCart('IncreaseQuantity', productId, sizeId);
+    });
+
+    // Sự kiện giảm số lượng
+    $(document).on('click', '.decrease-quantity', function () {
+        var productId = $(this).data('id');
+        var sizeId = $(this).data('size');
+        updateCart('DecreaseQuantity', productId, sizeId);
+    });
+
+    // Sự kiện xóa sản phẩm
+    $(document).on('click', '.remove-from-cart', function () {
+        var productId = $(this).data('id');
+        var sizeId = $(this).data('size');
+        updateCart('RemoveFromCart', productId, sizeId);
     });
 
     function addToCart(productId, sizeId) {
@@ -92,6 +114,21 @@
             }
         });
     }
+
+    function updateCart(action, productId, sizeId) {
+        $.ajax({
+            url: '/Admin/PhucVu/' + action,
+            type: 'POST',
+            data: { productId: productId, idsize: sizeId },
+            success: function (result) {
+                $('#cart').html(result);
+            },
+            error: function () {
+                alert('Đã xảy ra lỗi khi cập nhật giỏ hàng.');
+            }
+        });
+    }
+
 </script>
 
 

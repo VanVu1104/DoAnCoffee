@@ -31,6 +31,15 @@ namespace Manage_Coffee.Service
             _smtpConfig = smtpConfig.Value;
         }
 
+        public async Task SendEmailForForgotPassword(UserEmailOptions userEmailOptions)
+        {
+            userEmailOptions.Subject = UpdatePlaceHolders("Hello {{UserName}}, reset your password.", userEmailOptions.PlaceHolders);
+
+            userEmailOptions.Body = UpdatePlaceHolders(GetEmailBody("ForgotPassword"), userEmailOptions.PlaceHolders);
+
+            await SendEmail(userEmailOptions);
+        }
+
         private async Task SendEmail(UserEmailOptions userEmailOptions)
         {
             MailMessage mail = new MailMessage

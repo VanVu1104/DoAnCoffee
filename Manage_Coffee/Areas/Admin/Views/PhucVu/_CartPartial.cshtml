@@ -7,21 +7,22 @@
         @foreach (var item in Model)
         {
             <li>
-                @*   @item.Ten - Số lượng: @item.Soluong - Giá: @item.Dongia * @item.Soluong *@
                 Tên sản phẩm: <strong>@item.Ten</strong> <br />
-                Kích thước: <strong>@item.SizeID</strong> <br /> <!-- Hiển thị ID hoặc tên size nếu có -->
-                Trị giá: <strong>@item.TriGia</strong> <br /> <!-- Hiển thị ID hoặc tên size nếu có -->
+                Kích thước: <strong>@item.SizeID</strong> <br />
+                Trị giá: <strong>@item.TriGia</strong> <br />
                 Số lượng: <strong>@item.Soluong</strong> <br />
                 Giá đơn vị: @item.Dongia VND <br />
-                Tổng cộng: <strong>@( item.Soluong * (item.Dongia + item.TriGia)) VND</strong>
+                Tổng cộng: <strong>@(item.Soluong * (item.Dongia + item.TriGia)) VND</strong>
+                <br />
+                <button class="btn btn-secondary increase-quantity" data-id="@item.ProductID" data-size="@item.SizeID">Tăng</button>
+                <button class="btn btn-secondary decrease-quantity" data-id="@item.ProductID" data-size="@item.SizeID">Giảm</button>
+                <button class="btn btn-danger remove-from-cart" data-id="@item.ProductID" data-size="@item.SizeID">Xóa</button>
             </li>
             <hr />
-
         }
         <p><strong>Tổng số tiền: @(Model.Sum(i => i.Soluong * (i.Dongia + i.TriGia))) VND</strong></p>
     </ul>
     <a href="@Url.Action("Checkout", "PhucVu", new { area = "Admin" })" class="btn btn-success">Thanh toán</a>
-
 }
 else
 {

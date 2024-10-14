@@ -9,8 +9,6 @@ using Manage_Coffee.Models;
 using System.ComponentModel;
 using Manage_Coffee.ViewModels;
 using X.PagedList;
-using Manage_Coffee.Models;
-using Manage_Coffee.ViewModels;
 
 namespace Manage_Coffee.Controllers
 {

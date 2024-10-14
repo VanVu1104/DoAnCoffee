@@ -60,7 +60,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-29MRHMV\\SQLEXPRESS;Database=cf7;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=cf4;Trusted_Connection=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -383,7 +383,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
                 .IsUnicode(false);
             entity.Property(e => e.Ngaysinh).HasColumnType("date");
             entity.Property(e => e.Ten).HasMaxLength(50);
-
+            entity.Property(e => e.Sdt).HasColumnName("SDT");
             entity.HasOne(d => d.MaCnNavigation).WithMany(p => p.NhanViens)
                 .HasForeignKey(d => d.MaCn)
                 .HasConstraintName("FK__NhanVien__MaCN__3D5E1FD2");
@@ -869,4 +869,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
        
    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
+public DbSet<Manage_Coffee.Models.ForgotPassword> ForgotPassword { get; set; } = default!;
+
+public DbSet<Manage_Coffee.Models.ResetPasswordModel> ResetPasswordModel { get; set; } = default!;
 }

@@ -1,5 +1,4 @@
 ﻿using Manage_Coffee.Models;
-using Manage_Coffee.Models;
 using System.Collections.Generic;
 
 namespace Manage_Coffee.ViewModels

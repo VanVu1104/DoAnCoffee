@@ -13,7 +13,7 @@ public partial class Phieudhonl
 
     public string DiaChi { get; set; } = null!;
 
-    public bool TrangThai { get; set; }
+    public bool? TrangThai { get; set; }
 
     public string? Pttt { get; set; }
 

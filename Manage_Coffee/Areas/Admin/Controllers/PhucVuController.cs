@@ -1,4 +1,4 @@
-﻿using Manage_Coffee.Areas.Admin.Models;
+﻿            using Manage_Coffee.Areas.Admin.Models;
 using Manage_Coffee.Helpers;
 using Manage_Coffee.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +24,11 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             var MaNhanVien = HttpContext.Session.GetString("Manv");
             if (string.IsNullOrEmpty(TenNhanVien))
             {
-                return RedirectToAction("Login", "AccountAdmin", new { area = "Admin" });
+                return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
             }
+            // Lấy giỏ hàng từ Session và truyền vào ViewBag
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+            ViewBag.Cart = cart;
             // Load danh sách sản phẩm khi truy cập vào trang Index
             var products = LoadProducts(keyword);
 
@@ -98,7 +101,6 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
         }
         // Thêm hành động Checkout để hiển thị trang Checkout
-        [Route("Checkout")]
         public IActionResult Checkout()
         {
             // Lấy giỏ hàng từ Session
@@ -148,13 +150,13 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 MaOrder = Guid.NewGuid().ToString().Substring(0, 5),
                 Ngaygiodat = DateTime.Now,
                 Soban = soban,  // Số bàn từ người dùng
-                Tongtien = cart.Sum(c => (c.Dongia + c.TriGia) * c.Soluong ),
+                Tongtien = cart.Sum(c => (c.Dongia + c.TriGia) * c.Soluong),
                 Trangthai = true,  // Thanh toán thành công
-                Pttt = pttt,  
-                MaNv = maNv,  
-                MaCn = maCn,  
-                MaKm = null,  
-                Ten = tenKhachHang,  
+                Pttt = pttt,
+                MaNv = maNv,
+                MaCn = maCn,
+                MaKm = null,
+                Ten = tenKhachHang,
                 Sdt = sdt,
             };
             foreach (var item in cart)
@@ -188,8 +190,62 @@ namespace Manage_Coffee.Areas.Admin.Controllers
         {
             return View();
         }
-       
+        [HttpPost]
+        public IActionResult IncreaseQuantity(string productId, string idsize)
+        {
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var cartItem = cart.FirstOrDefault(c => c.ProductID == productId && c.SizeID == idsize);
 
+            if (cartItem != null)
+            {
+                cartItem.Soluong++;
+            }
+
+            // Lưu lại giỏ hàng vào Session
+            HttpContext.Session.Set("Cart", cart);
+            return PartialView("_CartPartial", cart);
+        }
+
+        // Phương thức để giảm số lượng sản phẩm trong giỏ hàng
+        [HttpPost]
+        public IActionResult DecreaseQuantity(string productId, string idsize)
+        {
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var cartItem = cart.FirstOrDefault(c => c.ProductID == productId && c.SizeID == idsize);
+
+            if (cartItem != null)
+            {
+                if (cartItem.Soluong > 1) // Không cho giảm xuống dưới 1
+                {
+                    cartItem.Soluong--;
+                }
+                else // Nếu số lượng là 1 thì xóa sản phẩm
+                {
+                    cart.Remove(cartItem);
+                }
+            }
+
+            // Lưu lại giỏ hàng vào Session
+            HttpContext.Session.Set("Cart", cart);
+            return PartialView("_CartPartial", cart);
+        }
+
+        // Phương thức để xóa sản phẩm khỏi giỏ hàng
+        [HttpPost]
+        public IActionResult RemoveFromCart(string productId, string idsize)
+        {
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var cartItem = cart.FirstOrDefault(c => c.ProductID == productId && c.SizeID == idsize);
+
+            if (cartItem != null)
+            {
+                cart.Remove(cartItem); // Xóa sản phẩm khỏi giỏ hàng
+            }
+
+            // Lưu lại giỏ hàng vào Session
+            HttpContext.Session.Set("Cart", cart);
+            return PartialView("_CartPartial", cart);
+        }
     }
 
 }

@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Manage_Coffee.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a href="@Url.Action("Create", "SanPhamsAdmin", new { area = "Admin" })" class="btn btn-danger">Danh sách sản phẩm</a>
+
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Ten)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dongia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dvt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mota)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Anh)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaToppingNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaloaiNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ten)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dongia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dvt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mota)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Anh)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaToppingNavigation.MaSp)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaloaiNavigation.Maloai)
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "SanPhamsAdmin", new { area = "Admin", id = item.MaSp })">Edit</a> |
+                    <a href="@Url.Action("Details", "SanPhamsAdmin", new { area = "Admin", id = item.MaSp })">Details</a> |
+                    <a href="@Url.Action("Delete", "SanPhamsAdmin", new { area = "Admin", id = item.MaSp })">Delete</a>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

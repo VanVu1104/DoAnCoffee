@@ -16,6 +16,7 @@ public partial class KhachHang
     public string Matkhau { get; set; } = null!;
 
     public int? Sdt { get; set; }
+    public int? Xu { get; set; }
 
     public string? Email { get; set; }
     public bool? GioiTinh { get; set; }

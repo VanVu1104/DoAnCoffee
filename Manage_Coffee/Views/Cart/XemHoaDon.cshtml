@@ -1,0 +1,116 @@
+﻿@model Manage_Coffee.Models.ViewModels.HoaDonViewModel
+
+@{
+    ViewData["Title"] = "Hóa Đơn Đặt Hàng";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Hóa Đơn Đặt Hàng</h2>
+    <div class="row">
+        <!-- Thông Tin Đơn Hàng -->
+        <div class="col-md-6">
+            <h4>Thông Tin Đơn Hàng</h4>
+     @*        <p><strong>Mã Phiếu:</strong> @Model.MaPhieuonl</p> *@
+            <p><strong>Ngày Đặt:</strong> @Model.Ngaygiodat.ToString("dd/MM/yyyy HH:mm")</p>
+       @*      <p><strong>Tổng Tiền:</strong> @Model.TongTien</p> *@
+            <p><strong>Địa Chỉ:</strong> @Model.DiaChi</p>
+            <p><strong>Phương Thức Thanh Toán:</strong> @Model.Pttt</p>
+@*             <p><strong>Tiền Ship:</strong> @(Model.TienShip.HasValue ? Model.TienShip.Value : "Miễn phí")</p> *@
+            <p><strong>Phương Thức Nhận Hàng:</strong> @Model.Ptnh</p>
+            <p><strong>Phương Thức Nhận Hàng:</strong> @Model.TrangThai</p> 
+        </div>
+        <!-- Thông Tin Khách Hàng và Chi Nhánh -->
+        <div class="col-md-6">
+            <h4>Thông Tin Khách Hàng</h4>
+            <p><strong>Tên Khách Hàng:</strong> @Model.TenKhachHang</p>
+            <p><strong>Email:</strong> @Model.EmailKhachHang</p>
+            <h4 class="mt-4">Thông Tin Chi Nhánh</h4>
+            <p><strong>Tên Chi Nhánh:</strong> @Model.TenChiNhanh</p>
+            @if (!string.IsNullOrEmpty(Model.TenKhuyenMai))
+            {
+                <p><strong>Khuyến Mãi:</strong> @Model.TenKhuyenMai</p>
+            }
+            else
+            {
+                <p><strong>Khuyến Mãi:</strong> Không có</p>
+            }
+        </div>
+    </div>
+
+    <h4 class="mt-5">Chi Tiết Sản Phẩm</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered mt-3">
+            <thead class="thead-light">
+                <tr>
+                    <th>Tên Sản Phẩm</th>
+                    <th>Đơn Giá</th>
+                    <th>Số Lượng</th>
+                    <th>Thành Tiền</th>
+                    <th>Size</th>
+                    <th>Ghi Chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ChiTietSanPham)
+                {
+                    <tr>
+                        <td>@item.MaSpNavigation.Ten</td>
+                        <td>@item.Gia</td>
+                        <td>@item.Soluong</td>
+                        <td>@item.Tongtien</td>
+                        <td>@item.MaSizeNavigation.Ten</td>
+                        <td>@item.Ghichu</td> 
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 offset-md-6">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Subtotal:</th>
+                        <td>@Model.ChiTietSanPham.Sum(p => p.Tongtien)</td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(Model.MaKm))
+                    {
+                        <tr>
+                            <th>Giảm Giá (@Model.TenKhuyenMai):</th>
+                             <td> -@Model.GiaTrikm % 
+                        </tr>
+                    }
+                     
+                        <tr>
+                            <th>Số xu:</th>
+                             <td> - @Model.SoXu
+                        </tr>
+                    
+                    @if (!string.IsNullOrEmpty(Model.MaKm) && Model.Role == "Vang")
+                    {
+                        <tr>
+                            <th>Giảm Giá (@Model.TenKhuyenMai):</th>
+                          @*   <td> -@(Model.ChiTietSanPham.Sum(p => p.Tongtien) * 0.10) *@ <!-- Giảm 10% nếu role Vang -->
+                        </tr>
+                    }
+                    <tr>
+                        <th>Tiền Ship:</th>
+                        <td>@(Model.TienShip.HasValue ? Model.TienShip.Value : "Miễn phí")</td>
+                    </tr>
+                    <tr class="font-weight-bold">
+                        <th>Tổng Thanh Toán:</th>
+                        <td>@Model.TongTien</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Quay Lại Trang Chủ</a>
+        <a href="@Url.Action("DownloadInvoice", "Cart", new { maPhieuonl = Model.MaPhieuonl })" class="btn btn-success">Tải Hóa Đơn PDF</a>
+    </div>
+</div>
+
+<!-- Bạn có thể thêm thêm các phần CSS để cải thiện giao diện nếu cần -->

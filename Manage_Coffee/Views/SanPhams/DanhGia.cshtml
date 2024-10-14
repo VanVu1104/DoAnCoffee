@@ -1,0 +1,176 @@
+﻿@{
+    ViewData["Title"] = "DanhGia";
+}
+<div class="danhgiasp">
+    <div class="danhgiasp-details">
+        <h2>ĐÁNH GIÁ SẢN PHẨM</h2>
+
+        <div class="danhgia">
+            <div class="sp" style="color:#07522E;">@ViewBag.TenSanPham</div>
+            <div class="sp" style="color:#E98B03;">
+                @String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", ViewBag.DonGia)
+            </div>
+
+            <div class="star-rating">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <img src="~/css/icon/@(i <= (ViewBag.CurrentRating ?? 0) ? "icons8-star-48.png" : "icons8-star-80.png")"
+                         class="star" data-value="@i" />
+                }
+            </div>
+
+            <form id="ratingForm" asp-action="SubmitRating" asp-controller="SanPhams" method="post">
+                <input type="hidden" name="soSao" id="soSao" value="@ViewBag.SoSao" />
+                <input type="hidden" name="maSp" value="@ViewBag.MaSp" />
+                <label for="nhanXet">Nhận xét:</label>
+                <textarea name="nhanXet" id="nhanXet" rows="3" cols="50">@ViewBag.NhanXet</textarea>
+            </form>
+
+            <div class="button-group">
+                <a asp-action="Details" asp-route-id="@ViewBag.MaSp" class="btn-back">Trở về</a> |
+                @if (ViewBag.SoSao == 0)
+                {
+                    <button type="button" class="button-danhgia" id="submitRating">Đánh giá sản phẩm</button>
+                }
+                else
+                {
+                    <button type="button" class="button-danhgia" id="submitRating">Cập nhật đánh giá</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    .sp {
+        font-size: 25px;
+        text-align: center;
+    }
+
+    .danhgiasp {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin: 120px auto;
+    }
+
+    .danhgiasp-details {
+        border: 1px solid black;
+        padding: 20px;
+        border-radius: 7px;
+        background-color: #fff;
+        width: 80%; /* Use percentage-based width */
+        max-width: 400px;
+        text-align: left;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 1.5rem; /* Fluid font size */
+        font-weight: bold;
+        color: black;
+        margin-bottom: 30px;
+        margin-top: 7px;
+    }
+
+    .star-rating {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .star {
+        width: 10%; /* Use percentage to make stars responsive */
+        max-width: 36px;
+        cursor: pointer;
+    }
+
+    .button-group {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+    }
+
+    .btn-back {
+        padding: 10px 20px;
+        background-color: lightgray;
+        border-radius: 5px;
+        color: #333;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-back:hover {
+            background-color: aqua;
+            text-decoration: none;
+        }
+
+    .button-danhgia {
+        padding: 10px 20px;
+        background-color: lightgray;
+        border-radius: 5px;
+        color: #333;
+        font-weight: bold;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .button-danhgia:hover {
+            background-color: aqua;
+        }
+</style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('.star');
+        const soSaoInput = document.getElementById('soSao');
+        let currentRating = parseInt(soSaoInput.value) || 0 ;
+        // Hiển thị icon sao đầy hoặc rỗng khi trang load
+        stars.forEach((star, index) => {
+            if (index < currentRating) {
+                star.setAttribute('src', '/css/icon/icons8-star-48.png');  // Sao đầy
+            } else {
+                star.setAttribute('src', '/css/icon/icons8-star-80.png');  // Sao rỗng
+            }
+
+            // Sự kiện click để chọn sao
+            star.addEventListener('click', () => {
+                currentRating = index + 1;  // Cập nhật giá trị rating hiện tại
+                stars.forEach((s, i) => {
+                    if (i < currentRating) {
+                        s.setAttribute('src', '/css/icon/icons8-star-48.png');  // Sao đầy
+                    } else {
+                        s.setAttribute('src', '/css/icon/icons8-star-80.png');  // Sao rỗng
+                    }
+                });
+                soSaoInput.value = currentRating; // Cập nhật giá trị sao vào input
+            });
+        });
+
+        // Xử lý khi submit form
+        document.getElementById('submitRating').addEventListener('click', (e) => {
+            const ratingValue = soSaoInput.value;
+            if (ratingValue) {
+                document.getElementById('ratingForm').submit(); // Gửi form khi đã chọn sao
+            } else {
+                e.preventDefault();
+                alert("Vui lòng chọn số sao trước khi đánh giá.");
+            }
+        });
+    });
+</script>
+
+
+
+
+
+

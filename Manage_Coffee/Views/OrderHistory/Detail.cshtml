@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Manage_Coffee.Models.Ctsponl>
+
+@{
+    // Giả sử bạn đã truyền mã phiếu đơn hàng từ controller
+    string maPhieuonl = ViewBag.MaPhieuonl; // Hoặc sử dụng ViewData hoặc một model phù hợp
+}
+
+<h2>Chi tiết đơn hàng</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Tên Sản Phẩm</th>
+            <th>Số Lượng</th>
+            <th>Size</th>
+            <th>Giá</th>
+            <th>Tổng Tiền</th>
+            <th>Ghi Chú</th>
+           
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MaSpNavigation.Ten</td> <!-- Thay TenSp bằng thuộc tính tên sản phẩm của bạn -->
+                <td>@item.Soluong</td>
+                <td>@item.MaSizeNavigation.Ten</td>
+                <td>@item.Gia</td>
+                <td>@item.Tongtien</td>
+                <td>@item.Ghichu</td>
+              
+            </tr>
+        }
+    </tbody>
+</table>
+<td>
+    <form asp-action="Reorder" method="post">
+        <input type="hidden" name="maPhieuonl" value="@maPhieuonl" /> <!-- Sử dụng biến mã phiếu đơn hàng -->
+        <button type="submit">Mua Lại </button>
+    </form>
+</td>

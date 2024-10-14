@@ -9,8 +9,8 @@ public partial class ChitietDanhGium
     public string MaSp { get; set; } = null!;
 
     public string MaKh { get; set; } = null!;
-
-    public virtual KhachHang MaKhNavigation { get; set; } = null!;
+    public string? NhanXet { get; set; }
+	public virtual KhachHang MaKhNavigation { get; set; } = null!;
 
     public virtual SanPham MaSpNavigation { get; set; } = null!;
 }

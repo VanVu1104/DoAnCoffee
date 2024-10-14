@@ -25,8 +25,8 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-	options.IdleTimeout = TimeSpan.FromSeconds(30);
-	options.Cookie.HttpOnly = true;
+    options.IdleTimeout = TimeSpan.FromMinutes(15); // Thời gian tồn tại của session
+    options.Cookie.HttpOnly = true;
 	options.Cookie.IsEssential = true;
 });
 
@@ -52,7 +52,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
     options.SignIn.RequireConfirmedEmail = true;
 
-    //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(20);
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(20);
     //options.Lockout.MaxFailedAccessAttempts = 3;
 });
 

@@ -1,0 +1,51 @@
+﻿@model Manage_Coffee.Models.PhieuNhapXuat
+<form method="post" asp-action="Create">
+    <div>
+        <label>Loại phiếu:</label>
+        <select name="loai">
+            <option value="nhap">Nhập</option>
+            <option value="xuat">Xuất</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Nhà cung cấp:</label>
+        <select name="maCcap">
+            @foreach (var ncc in ViewBag.NhaCungCapList)
+            {
+                <option value="@ncc.MaCcap">@ncc.Ten</option>
+            }
+        </select>
+    </div>
+
+    <div id="product-list">
+        <div class="product-item">
+            <label>Nguyên vật liệu:</label>
+            <select name="maNvlList">
+                @foreach (var nvl in ViewBag.NguyenVatLieu)
+                {
+                    <option value="@nvl.MaNvl">@nvl.Ten</option>
+                }
+            </select>
+
+            <label>Số lượng:</label>
+            <input type="number" name="soLuongList" min="1" required />
+        </div>
+    </div>
+
+    <button type="button" onclick="addProduct()">Thêm sản phẩm</button>
+
+    <div>
+        <label>Địa chỉ:</label>
+        <input type="text" name="diaChi" required />
+    </div>
+
+    <button type="submit">Tạo phiếu</button>
+</form>
+
+<script>
+    function addProduct() {
+        const productItem = document.querySelector('.product-item').cloneNode(true);
+        document.getElementById('product-list').appendChild(productItem);
+    }
+</script>

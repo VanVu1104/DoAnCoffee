@@ -20,6 +20,10 @@ namespace Manage_Coffee.Repository
 
         Task GenerateEmailConfirmationTokenAsync(ApplicationUser user);
 
+        Task<IdentityResult> ResetPasswordAsync(ResetPasswordModel model);
+
+        Task GenerateForgotPasswordTokenAsync(ApplicationUser user);
+
         // Google
         AuthenticationProperties ExternalLoginAsync(string provider, string redirectUrl);
 

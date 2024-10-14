@@ -31,8 +31,6 @@ public partial class PhieuOrder
 
     public virtual ChiNhanh MaCnNavigation { get; set; } = null!;
 
-
-
     public virtual DanhMucKm? MaKmNavigation { get; set; }
 
     public virtual NhanVien? MaNvNavigation { get; set; }

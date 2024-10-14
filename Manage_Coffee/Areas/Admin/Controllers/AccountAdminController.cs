@@ -56,20 +56,20 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 _context.SaveChanges();
 
                 // Điều hướng tới trang login sau khi đăng ký thành công
-                return RedirectToAction("Login", "AccountAdmin", new { area = "Admin" });
+                return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
             }
 
             return View(model);
         }
         [Route("Login-admin")]
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult LoginAdmin()
         {
             return View();
         }
         [Route("Login-admin")]
         [HttpPost]
-        public IActionResult Login(int sdt, string password)
+        public IActionResult LoginAdmin(int sdt, string password)
         {
             // Tìm nhân viên dựa trên số điện thoại và mật khẩu
             var nhanVien = _context.NhanViens
@@ -80,6 +80,13 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 // Lưu thông tin vào session
                 HttpContext.Session.SetString("NhanVienSdt", nhanVien.Sdt.ToString());
                 HttpContext.Session.SetString("NhanVienChucVu", nhanVien.Chucvu);
+                HttpContext.Session.SetString("Ten", nhanVien.Ten);
+                HttpContext.Session.SetString("Manv", nhanVien.MaNv);
+                if(nhanVien.MaCn == null)
+                {
+                    nhanVien.MaCn = "CN001";
+                }
+                HttpContext.Session.SetString("Macn", nhanVien.MaCn);
 
                 if (nhanVien.Chucvu == "Phục vụ")
                 {
@@ -88,12 +95,13 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index", "AccoutAdmin", new { area = "Admin" });
+                    return RedirectToAction("Index", "QuanLy", new { area = "Admin" });
                 }
             }
 
             ViewBag.Error = "Số điện thoại hoặc mật khẩu không chính xác";
             return View();
         }
+        
     }
 }

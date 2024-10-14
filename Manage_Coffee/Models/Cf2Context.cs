@@ -682,6 +682,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
 			b.Property<string>("PasswordHash")
 				.HasColumnType("nvarchar(max)");
 
+
 			b.Property<string>("PhoneNumber")
 				.HasColumnType("nvarchar(max)");
 
@@ -924,4 +925,7 @@ public partial class Cf2Context : IdentityDbContext<ApplicationUser>
 
 	partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
+public DbSet<Manage_Coffee.Models.ForgotPassword> ForgotPassword { get; set; } = default!;
+
+public DbSet<Manage_Coffee.Models.ResetPasswordModel> ResetPasswordModel { get; set; } = default!;
 }

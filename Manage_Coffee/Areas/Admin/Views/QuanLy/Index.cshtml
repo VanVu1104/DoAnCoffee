@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Manage_Coffee.Models.NguyenVatLieu>
+
+<h2>Danh sách Nguyên Vật Liệu</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã NVL</th>
+            <th>Tên</th>
+            <th>Đơn Giá</th>
+            <th>Đơn Vị Tính</th>
+            <th>Ảnh</th>
+            <th>Mô Tả</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MaNvl</td>
+                <td>@item.Ten</td>
+                <td>@item.Dongia</td>
+                <td>@item.Dvt</td>
+                <td><img src="@item.Anh" alt="Ảnh" width="100" /></td>
+                <td>@item.Mota</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Link to Create action -->
+<p>
+    @Html.ActionLink("Thêm Nguyên Vật Liệu Mới", "Create", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-primary" })
+</p>
+<p>
+    @Html.ActionLink("Thêm phiếu nhập xuất nguyên vật liệu", "CreateMaterial", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-primary" })
+</p>

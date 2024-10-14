@@ -1,0 +1,45 @@
+﻿@model List<Manage_Coffee.Models.Phieudhonl>
+
+<div>
+    <h2>Danh sách đơn đặt hàng</h2>
+
+    @if (ViewBag.Message != null)
+    {
+        <p>@ViewBag.Message</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Mã Phiếu</th>
+                    <th>Ngày giờ đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Địa chỉ</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr id="order-@order.MaPhieuonl">
+                        <td>@order.MaPhieuonl</td>
+                        <td>@order.Ngaygiodat.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@order.TongTien</td>
+                        <td>@order.DiaChi</td>
+                        <td id="status-@order.MaPhieuonl">
+                            @if (@order.TrangThai == true)
+                            {
+                                <p>Đã xác nhận</p>
+                            }
+                            else
+                            {
+                                <p>Đã hủy</p>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

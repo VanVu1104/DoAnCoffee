@@ -16,6 +16,8 @@ public partial class NguyenVatLieu
 
     public string Anh { get; set; } = null!;
 
+    public double SoLuong { get; set; }
+
     public virtual ICollection<Bom> Boms { get; set; } = new List<Bom>();
 
     public virtual ICollection<Ctphieu> Ctphieus { get; set; } = new List<Ctphieu>();

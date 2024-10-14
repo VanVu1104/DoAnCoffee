@@ -56,7 +56,7 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 _context.SaveChanges();
 
                 // Điều hướng tới trang login sau khi đăng ký thành công
-                return RedirectToAction("Login", "AccountAdmin", new { area = "Admin" });
+                return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
             }
 
             return View(model);
@@ -95,7 +95,7 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index", "AccoutAdmin", new { area = "Admin" });
+                    return RedirectToAction("Index", "QuanLy", new { area = "Admin" });
                 }
             }
 

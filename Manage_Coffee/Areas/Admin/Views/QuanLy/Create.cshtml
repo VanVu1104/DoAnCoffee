@@ -1,0 +1,38 @@
+﻿@model Manage_Coffee.Models.NguyenVatLieu
+
+<h2>Thêm nguyên vật liệu mới</h2>
+
+<form asp-action="Create" method="post">
+
+    <div class="form-group">
+        <label for="Ten">Tên Nguyên Vật Liệu</label>
+        <input type="text" class="form-control" id="Ten" name="Ten" value="@Model.Ten" />
+        <span asp-validation-for="Ten" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Dongia">Đơn Giá</label>
+        <input type="number" class="form-control" id="Dongia" name="Dongia" value="@Model.Dongia" />
+        <span asp-validation-for="Dongia" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Dvt">Đơn Vị Tính</label>
+        <input type="text" class="form-control" id="Dvt" name="Dvt" value="@Model.Dvt" />
+        <span asp-validation-for="Dvt" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Mota">Mô Tả</label>
+        <input type="text" class="form-control" id="Mota" name="Mota" value="@Model.Mota" />
+        <span asp-validation-for="Mota" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Anh">Ảnh</label>
+        <input type="text" class="form-control" id="Anh" name="Anh" value="@Model.Anh" />
+        <span asp-validation-for="Anh" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</form>

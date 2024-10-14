@@ -1,0 +1,122 @@
+﻿@model List<Manage_Coffee.Models.Phieudhonl>
+
+<div>
+    <h2>Danh sách đơn đặt hàng</h2>
+
+    @if (ViewBag.Message != null)
+    {
+        <p>@ViewBag.Message</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Mã Phiếu</th>
+                    <th>Ngày giờ đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Địa chỉ</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr id="order-@order.MaPhieuonl">
+                        <td>@order.MaPhieuonl</td>
+                        <td>@order.Ngaygiodat.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@order.TongTien</td>
+                        <td>@order.DiaChi</td>
+                        <td id="status-@order.MaPhieuonl">
+                            @if (@order.TrangThai == true)
+                            {
+                                <p>Đã xác nhận</p>
+                            }
+                            else if (@order.TrangThai == false)
+                            {
+                                <p>Chờ xác nhận</p>
+                            }
+                            else
+                            {
+                                <p>Đã hủy</p>
+                            }
+                        </td>
+                        <td>
+                            @if (order.TrangThai == false)
+                            {
+                                <button class="btn btn-success" onclick="confirmOrder('@order.MaPhieuonl')">Xác nhận</button>
+                                <button class="btn btn-success" onclick="cancelOrder('@order.MaPhieuonl')">Hủy đơn</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    const token = '@ViewBag.AntiForgeryToken';
+
+    function confirmOrder(orderId) {
+        if (confirm("Bạn có chắc muốn xác nhận đơn hàng này?")) {
+            $.ajax({
+                url: '/Admin/ListOrder/ConfirmOrder',
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(orderId),
+                success: function (data) {
+                    console.log(data);  // Kiểm tra phản hồi từ server
+                    if (data.success) {
+                        console.log("#status-" + orderId);
+                        // Cập nhật nội dung trạng thái đơn hàng
+                        $("#status-" + orderId).html("<p>Đã xác nhận</p>");
+                        // Ẩn nút xác nhận sau khi cập nhật
+                        $("#order-" + orderId).find("button").hide();
+                    } else {
+                        alert("Có lỗi xảy ra: " + data.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Lỗi xác nhận đơn hàng: ", xhr.responseText);
+                    alert("Đã xảy ra lỗi khi xác nhận đơn hàng: " + xhr.responseText);
+                }
+            });
+        }
+    }
+    function cancelOrder(orderId) {
+        if (confirm("Bạn có chắc muốn hủy đơn hàng này?")) {
+            $.ajax({
+                url: '/Admin/ListOrder/CancelOrder',
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(orderId),
+                success: function (data) {
+                    console.log(data);  // Kiểm tra phản hồi từ server
+                    if (data.success) {
+                        console.log("#status-" + orderId);
+                        // Cập nhật nội dung trạng thái đơn hàng
+                        $("#status-" + orderId).html("<p>Đã hủy</p>");
+                        // Ẩn nút hủy sau khi cập nhật
+                        $("#order-" + orderId).find("button").hide();
+                    } else {
+                        alert("Có lỗi xảy ra: " + data.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Lỗi hủy đơn hàng: ", xhr.responseText);
+                    alert("Đã xảy ra lỗi khi hủy đơn hàng: " + xhr.responseText);
+                }
+            });
+        }
+    }
+
+</script>

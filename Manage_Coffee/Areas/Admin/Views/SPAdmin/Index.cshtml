@@ -1,0 +1,125 @@
+﻿@model IEnumerable<Manage_Coffee.Models.SanPham>
+@{
+    ViewData["Title"] = "Index";
+}
+<h4>SanPham</h4>
+
+<a href="@Url.Action("Create1", "SPAdmin")" class="btn btn-primary">Cập nhật thông tin</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Đơn giá</th>
+            <th>Đơn Vị</th>
+          <th>Topping</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sanPham in Model)
+        {
+            <tr>
+                 <td>
+                    <img src="~/css/img/@sanPham.Anh" />
+                 </td>
+                <td>@sanPham.Ten</td>
+                <td>@sanPham.Dongia</td>
+                <td>@sanPham.Dvt</td>
+                <td>@(sanPham.MaToppingNavigation != null ? sanPham.MaToppingNavigation.Ten : "Không có Topping")</td>
+
+                <td>
+                    <label class="switch">
+                        <input type="checkbox"
+                               id="toggle-@sanPham.MaSp"
+                        @(sanPham.TrangThai ? "checked" : "")
+                               onchange="thayDoiTrangThai('@sanPham.MaSp', this.checked)">
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function thayDoiTrangThai(maSp, trangThai) {
+        $.ajax({
+            url: '/Admin/SPAdmin/ThayDoiTrangThaiAjax',
+            type: 'POST',
+            data: { maSp: maSp, trangThai: trangThai },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                if (!response.success) {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert('Đã xảy ra lỗi khi thay đổi trạng thái.');
+            }
+        });
+    }
+</script>
+
+<style>
+    /* Style cho toggle switch */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+    /* Round slider */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+</style>

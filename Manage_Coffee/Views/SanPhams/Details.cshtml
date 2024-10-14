@@ -1,83 +1,152 @@
 ﻿@model Manage_Coffee.ViewModels.ProductDetailViewModel
 
-<div>
-    <h4>Chi tiết Sản Phẩm</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.Ten)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Product.Ten)
-        </dd>
+@{
+    var formatMoney = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.Dongia)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Product.Dongia)
-        </dd>
+<link href="~/css/details.css" rel="stylesheet" />
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.Dvt)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Product.Dvt)
-        </dd>
+<div class="product-container">
+    <!-- Phần hình ảnh -->
+    <div class="product-image">
+        <img src="~/css/img/@Model.Product.Anh" width="350" height="350" />
+    </div>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.Mota)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Product.Mota)
-        </dd>
+    <!-- Phần nội dung -->
+    <div class="product-content">
+        <dl class="thydo" style="padding:0 0 0 12px;">
+            <dd class="tensp">
+                @Html.DisplayFor(model => model.Product.Ten)
+                <span style="margin-bottom:10px;" class="sosao">
+                    @ViewBag.AverageRating <i style="margin-bottom:10px;"><img src="~/css/icon/icons8-star-48.png" style="width:36px; height:36px;" /></i> ( @ViewBag.RatingCount <a asp-action="DanhSachDanhGia" asp-route-maSp="@ViewBag.MaSp" >đánh giá</a> )
+                    <a asp-action="DanhGia"
+                       asp-controller="SanPhams"
+                       asp-route-ten="@Model.Product.Ten"
+                       asp-route-masp="@Model.Product.MaSp"
+                       asp-route-dongia="@Model.Product.Dongia">đánh giá</a>
+                    
+                </span>
+            </dd>
+            <dd class="giasp">
+                @String.Format(formatMoney, "{0:c00}", @Model.Product.Dongia)
+            </dd>
+            <dd class="motasp">
+                @Html.DisplayFor(model => model.Product.Mota)
+            </dd>
+        </dl>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.Anh)
-        </dt>
-        <dd class="col-sm-10">
-            <img src="@Url.Content(Model.Product.Anh)" alt="@Model.Product.Ten" width="100" height="100" />
-        </dd>
+        <form asp-action="Add" asp-controller="Cart" method="post" style="padding:0 0 0 12px;">
+            <input type="hidden" name="id" value="@Model.Product.MaSp" />
 
-        <dt class="col-sm-2">Topping</dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Product.MaToppingNavigation.Ten)
-        </dd>
+            <!-- Hiển thị danh sách kích thước (Sizes) -->
+            @await Component.InvokeAsync("Size")
 
-        <dt class="col-sm-2">Loại sản phẩm</dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Product.MaloaiNavigation.Ten)
-        </dd>
-    </dl>
+            <!-- Hiển thị danh sách Topping -->
+            <label class="tentoping" style="color:#07522E; font-size:20px; font-weight:bold;margin-top:15px; ">Topping:</label>
+            <div class="haha">
+                @foreach (var topping in Model.Toppings)
+                {
+                    <label class="toping">
+                        <input type="checkbox" name="topping" value="@topping.MaTopping" />
+                        <div class="hihi">
+                            @topping.Ten - @String.Format(formatMoney, "{0:c00}", @topping.Dongia)
+                        </div>
+                    </label>
+                }
+            </div>
+
+            <label style="color:#07522E; font-size:20px; font-weight:bold;" for="ghiChu">Ghi chú:</label>
+            <textarea name="ghiChu" id="ghiChu" rows="3" cols="50"></textarea>
+
+            <div class="button-group">
+                <button type="submit">Thêm vào giỏ hàng</button>
+                <a class="giohang" asp-action="Cart" asp-controller="Cart">Giỏ Hàng</a>
+            </div>
+           
+        </form>
+
+        <form asp-action="Add" asp-controller="Cart" method="post">
+            <div>
+                <h4>Chọn các kit đi kèm:</h4>
+                @foreach (var kit in Model.KitsAsKit)
+                {
+                    <div>
+                        <input type="checkbox" name="selectedKits" value="@kit.MaKit" />
+                        @kit.MaKitNavigation.Ten + @kit.MaSpNavigation.Ten @kit.GiaKit VND
+                    </div>
+                }
+            </div>
+            <input type="hidden" name="id" value="@Model.Product.MaSp" /> <!-- Giữ mã sản phẩm để thêm vào giỏ hàng -->
+            <button type="submit">Thêm kit vào giỏ hàng</button>
+        </form>
+    </div>
 </div>
 
-<!-- Form thêm vào giỏ hàng -->
-<form asp-action="Add" asp-controller="Cart" method="post">
-    <input type="hidden" name="id" value="@Model.Product.MaSp" />
 
-    <!-- Hiển thị danh sách kích thước (Sizes) -->
-    @await Component.InvokeAsync("Size")
+<style>
+    /* Đảm bảo label hoạt động như button */
+    label.toping {
+        display: inline-block;
+        border: 2px solid #228B22;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        color: #212529;
+        font-size: 16px;
+        font-weight: normal;
+        width: 210px;
+        height: 55px;
+        margin: 10px;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
 
-    <!-- Hiển thị danh sách Topping -->
-    <ul>
-        @foreach (var topping in Model.Toppings)
-
-        {
-            <li>
-                <label>
-                    <input type="radio" name="topping" value="@topping.MaTopping" />
-                    @topping.Ten - Giá: @topping.Dongia
-                </label>
-            </li>
+        /* Ẩn hoàn toàn checkbox nhưng vẫn để nó hoạt động */
+        label.toping input[type="checkbox"] {
+            position: absolute;
+            left: 0;
+            opacity: 0;
         }
-    </ul>
-    <label for="ghiChu">Ghi chú:</label>
-    <textarea name="ghiChu" id="ghiChu" rows="3" cols="50"></textarea>
-    <button type="submit">Thêm vào giỏ hàng</button>
-</form>
 
-<div>
-    <a class="btn btn-default" asp-action="Cart" asp-controller="Cart">Giỏ Hàng </a>
-    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Product.MaSp">Edit</a>
-    <a class="btn btn-secondary" asp-action="Sanpham1">Back to List</a>
-</div>
+            /* Style khi checkbox được chọn */
+            label.toping input[type="checkbox"]:checked + .hihi {
+                color: white;
+                background-color: #006400;
+                border-color: #228B22;
+                font-weight: bold;
+            }
+
+        /* Hiệu ứng hover */
+        label.toping:hover {
+            background-color: #F0F0F0;
+        }
+
+    /* Style cho div chứa nội dung topping */
+    .hihi {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    /* Để bao quanh các label theo chiều ngang */
+    .haha {
+        width:700px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    /* Topping title */
+    .tentoping {
+        color: #07522E;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+
+</style>

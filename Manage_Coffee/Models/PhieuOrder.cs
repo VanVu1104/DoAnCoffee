@@ -13,7 +13,7 @@ public partial class PhieuOrder
 
     public int Tongtien { get; set; }
 
-    public bool Trangthai { get; set; }
+    public bool? Trangthai { get; set; }
 
     public string? Pttt { get; set; }
 

@@ -12,6 +12,7 @@ public partial class Ctsponl
     public int Tongtien { get; set; }
 
     public string? Ghichu { get; set; }
+  
 
     public string MaSp { get; set; }
 
@@ -20,7 +21,7 @@ public partial class Ctsponl
     public string MaKh { get; set; } = null!;
 
     public string MaSize { get; set; } = null!;
-
+    
     public virtual Phieudhonl MaPhieuonlNavigation { get; set; } = null!;
 
     public virtual Size MaSizeNavigation { get; set; } = null!;

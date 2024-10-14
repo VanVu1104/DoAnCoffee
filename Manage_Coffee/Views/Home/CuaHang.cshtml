@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "CuaHang";
+    <link rel="icon" href="path/to/favicon.ico">
+    <link href="~/css/lienhe.css" rel="stylesheet" />
+}
+
+
+<div id="cuahang" style="margin-bottom:35px;margin-top35px; ">
+    <h2 style="color:#07522E;">Các chi nhánh cửa hàng</h2>
+    <div id="list-cuahang">
+        <div class="item3">
+            <div class="hinh">
+                <img src="~/css/img/cuahangcf.png" alt="Chi nhánh Tây Ninh" />
+            </div>
+            <div class="info">
+                <div class="name">Chi nhánh Tây Ninh</div>
+                <div class="detail">17 Lạc Long Quân, Hiệp Hòa, Hiệp Tân, Hòa Thành, Tây Ninh</div>
+            </div>
+        </div>
+
+        <div class="item3">
+            <div class="hinh">
+                <img src="~/css/img/ch2.jpg" alt="Chi nhánh Long An" />
+            </div>
+            <div class="info">
+                <div class="name">Chi nhánh Long An</div>
+                <div class="detail">114 Lê Lợi, Rừng Dầu, Mỹ Hạnh Bắc, Đức Hòa, Long An</div>
+            </div>
+        </div>
+
+        <div class="item3">
+            <div class="hinh">
+                <img src="~/css/img/ch3.jpg" alt="Chi nhánh HCM" />
+            </div>
+            <div class="info">
+                <div class="name">Chi nhánh HCM</div>
+                <div class="detail">32 Trường Sơn, Phường 2, Tân Bình, Tp Hồ Chí Minh</div>
+            </div>
+        </div>
+
+        <div class="item3">
+            <div class="hinh">
+                <img src="~/css/img/cuahang.jpg" alt="Chi nhánh Đồng Nai" />
+            </div>
+            <div class="info">
+                <div class="name">Chi nhánh Đồng Nai</div>
+                <div class="detail">141 Hai Bà Trưng, Long Thành, Đồng Nai</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    ViewData["Title"] = "LienHe";
+}
+<link rel="icon" href="path/to/favicon.ico">
+<link href="~/css/lienhe.css" rel="stylesheet" />
+@* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script> *@
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBat7CO2z3dYywzYS3TzdiVHWkC0na-GTc&callback=initMap">
+</script>
+
+<div id="map" style="width: 100%; height: 510px;"></div>
+
+<script>
+    function initMap() {
+        // Tạo đối tượng bản đồ
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 5,
+            center: { lat: 14.770037779173293, lng: 108.53981016032041 }, // Vị trí trung tâm bản đồ (ví dụ: Thái Lan)
+        });
+
+        // Danh sách các vị trí
+        var locations = [
+            { lat: 11.3036301033772, lng: 106.12763336757901, title: "17 Lạc Long Quân, Hòa Thành, Tây Ninh" },
+            { lat: 10.782531301753535, lng: 106.95611553688592, title: "141 Hai Bà Trưng, Long Thành, Đồng Nai" },
+            { lat: 10.888294715798647, lng: 106.4043905092379, title: "114 Lê Lợi, Đức Hòa, Long An" },
+            { lat: 10.8092913743186, lng: 106.66495988106487, title: "32 Trường Sơn, Quận Tân Bình, Thành phố Hồ Chí Minh" }
+        ];
+
+        // Thêm các marker vào bản đồ
+        locations.forEach(function (location) {
+            var marker = new google.maps.Marker({
+                position: { lat: location.lat, lng: location.lng },
+                map: map,
+                title: location.title,
+            });
+
+            // Hiển thị thông tin khi nhấp vào marker
+            var infoWindow = new google.maps.InfoWindow({
+                content: location.title,
+            });
+
+            marker.addListener('click', function () {
+                infoWindow.open(map, marker);
+            });
+        });
+    }
+</script>
+
+

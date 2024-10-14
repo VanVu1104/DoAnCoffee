@@ -1,5 +1,4 @@
-﻿@* @using Manage_Coffee.Models.ViewModels
-@model CartItemViewModel *@
+﻿@* @model IEnumerable<Manage_Coffee.Models.CartItem> *@
 @model Manage_Coffee.Models.ViewModels.CartItemViewModel
 @{
 	ViewData["Title"] = "Checkout";
@@ -32,8 +31,23 @@
 						<div class="form-item mt-3">
 							<textarea name="GhiChu" class="form-control" spellcheck="false" cols="30" rows="11" placeholder="Ghi chú"></textarea>
 						</div>
-						<button type="submit" class="btn border-secondary text-uppercase text-primary w-100 mt-2">Đặt hàng</button>
+						<div class="form-item my-3">
+							<label>Số xu hiện có: <span id="userPoints">@ViewBag.SoXu</span> xu</label>
+						</div>
+						<div class="form-item my-3">
+							<label for="pointsInput">Nhập số xu muốn sử dụng:</label>
+							<input type="number" id="pointsInput" name="SoXu" class="form-control" min="0" max="@ViewBag.SoXu" value="0">				
+						</div>
+						<form asp-action="Checkout" asp-controller="Cart">
+						
+							<input type="hidden" id="SelectedDiscount" name="MaKm" value="" />
+							<input type="hidden" id="FinalTotal" name="totalValue" value="" />
+							<input type="hidden" id="SelectedBranch" name="MaCn" value="" />
+							<button type="submit" class="btn border-secondary text-uppercase text-primary w-100 mt-2">Đặt hàng</button>
+							
+						</form>
 						<div id="paypal-button-container" class="form-item mt-3" style="max-width:1000px;"></div>
+
 					</div>
 				</form>
 				<div class="col-md-12 col-lg-6 col-xl-5">
@@ -52,11 +66,11 @@
 								@foreach (var item in Model.CartItems)
 								{
 									<tr>
-										 @* <th scope="row">
-										 	<div class="d-flex align-items-center mt-2">
-										 		<img src="~/Hinh/HangHoa/@item.Hinh" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="@item.TenHH">
-										 	</div>
-										 </th> *@
+										@* <th scope="row">
+									<div class="d-flex align-items-center mt-2">
+									<img src="~/Hinh/HangHoa/@item.Hinh" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="@item.TenHH">
+									</div>
+									</th> *@
 										<td class="py-5">@item.Ten</td>
 										<td class="py-5">$@item.Dongia</td>
 										<td class="py-5">@item.Soluong</td>
@@ -65,21 +79,43 @@
 										<td class="py-5">@item.Ghichu</td>
 										<td class="py-5">@item.Total</td>
 									</tr>
+									
 								}
+								
 								<div>
-									<label for="MaCn">Chọn Chi Nhánh:</label>
-									@await Component.InvokeAsync("ChiNhanh")
-								</div>
-								<div>
+									@* <h3>Danh sách giảm giá</h3> *@
+									@* <select id="DiscountCode">
+									<option value="">Chọn mã giảm giá</option>
+									@foreach (var discount in Model.Discounts)
+									{
+									<option value="@discount.MaKm">@discount.Ten</option>
+									}
+									</select> *@
+
 									<h3>Danh sách giảm giá</h3>
 									<select id="DiscountCode">
-										<option value="MaKm">Chọn mã giảm giá</option>
+										<option value="">Chọn mã giảm giá</option>
 										@foreach (var discount in Model.Discounts)
 										{
-											<option value="@discount.MaKm">@discount.Ten</option>
+											// Chuyển đổi ngày hiện tại và ngày của mã khuyến mãi
+											var currentDate = DateTime.Now;
+											var ngayApDung = discount.Ngayapdung;
+											var ngayHetHan = discount.Ngayhethan;
+
+											// Chỉ hiển thị các mã có số lượng > 0 và còn trong khoảng thời gian hợp lệ
+											if (discount.Soluong > 0 && ngayApDung <= currentDate && ngayHetHan >= currentDate)
+											{
+												<option value="@discount.MaKm">@discount.Ten - Áp dụng cho hoá đơn:@discount.Hanmuc</option>
+											}
 										}
 									</select>
 
+
+
+								</div>
+								<div>
+									<label for="MaCn">Chọn Chi Nhánh:</label>
+									@await Component.InvokeAsync("ChiNhanh")
 								</div>
 								<tr>
 									<th scope="row">
@@ -97,7 +133,6 @@
 								</tr>
 
 								<p>Tổng giá sau giảm: <span id="totalValue">@Model.CartItems.Sum(p => p.Total).ToString("C")</span></p>
-
 							</tbody>
 						</table>
 					</div>
@@ -109,7 +144,6 @@
 							</div>
 						</div>
 					</div>
-				
 				</div>
 			</div>
 		</form>
@@ -123,104 +157,166 @@
 	</script>
 	<script>
 		$(document).ready(function () {
+			// Khi người dùng thay đổi mã giảm giá
 			$("#DiscountCode").change(function () {
 				var discountValue = $(this).val(); // Lấy giá trị từ dropdown
 				$("#SelectedDiscount").val(discountValue);
-				if (!discountValue) {
-					alert("Vui lòng chọn một mã giảm giá.");
-					return;
-				}
 
+				// Lấy tổng gốc
 				var subtotal = @Model.CartItems.Sum(p => p.Total); // Tổng giá ban đầu
 				var discounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Discounts)); // Chuyển đổi Discounts thành JSON
 				var validDiscount = null; // Khởi tạo biến cho mã giảm giá hợp lệ
 
-				// Kiểm tra mã giảm giá
+				// Kiểm tra mã giảm giá dựa trên hạn mức
 				validDiscount = discounts.find(discount => {
-					var startDate = new Date(discount.Ngayapdung);
-					var endDate = new Date(discount.Ngayhethan);
 					var hanMuc = discount.Hanmuc;
-
-					return discount.MaKm === discountValue && subtotal >= hanMuc && new Date() >= startDate && new Date() <= endDate;
+					return discount.MaKm === discountValue && subtotal >= hanMuc;
 				});
 
+				var currentTotal = subtotal;
 				// Cập nhật tổng giá trị sau khi áp dụng giảm giá
-				if (!validDiscount) {
-					alert("Mã giảm giá không hợp lệ hoặc không đủ điều kiện sử dụng.");
-					$('#totalValue').text(subtotal.toFixed(2)); // Hiển thị tổng ban đầu
-				} else {
-					// Tính toán tổng tiền sau khi áp dụng giảm giá
+				if (validDiscount) {
 					var discountAmount = validDiscount.GiaTri; // Giả sử đây là phần trăm giảm giá
-					var newTotal = subtotal - (subtotal * discountAmount / 100);
-					$('#totalValue').text(newTotal.toFixed(2));
-					$("#FinalTotal").val(newTotal.toFixed(2)); // Cập nhật hiển thị tổng
+					currentTotal = subtotal - (subtotal * discountAmount / 100); // Tổng sau khi trừ giảm giá
 				}
 
-				// Tô màu cho các phiếu giảm giá không hợp lệ
-				$('#DiscountCode option').each(function () {
-					var optionValue = $(this).val();
-					var isValid = discounts.some(discount => {
-						var startDate = new Date(discount.Ngayapdung);
-						var endDate = new Date(discount.Ngayhethan);
-						var hanMuc = discount.Hanmuc;
-
-						return optionValue === discount.MaKm && subtotal >= hanMuc && new Date() >= startDate && new Date() <= endDate;
-					});
-
-					$(this).toggleClass('invalid-discount', !isValid);
-					$(this).toggleClass('valid-discount', isValid);
-				});
+				// Trừ số xu nếu có
+				updateTotalWithPoints(currentTotal);
 			});
+
+			// Khi người dùng nhập số xu
+			$("#pointsInput").on("input", function () {
+				var points = parseInt($(this).val()) || 0;
+				var userPoints = parseInt($("#userPoints").text()) || 0;
+
+				if (points > userPoints) {
+					alert("Số xu không được vượt quá xu hiện có.");
+					$(this).val(userPoints);
+					points = userPoints;
+				}
+
+				// Lấy tổng gốc
+				var subtotal = @Model.CartItems.Sum(p => p.Total);
+
+				// Kiểm tra xem có mã giảm giá nào đang được chọn không
+				var discountValue = $("#DiscountCode").val();
+				var currentTotal = subtotal;
+
+				// Nếu có mã giảm giá thì tính tổng tiền sau khi giảm giá
+				if (discountValue) {
+					var discounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Discounts)); // Chuyển đổi Discounts thành JSON
+					var validDiscount = discounts.find(discount => discount.MaKm === discountValue);
+
+					if (validDiscount) {
+						var discountAmount = validDiscount.GiaTri; // Phần trăm giảm giá
+						currentTotal = subtotal - (subtotal * discountAmount / 100); // Tổng sau khi giảm giá
+					}
+				}
+
+				// Cập nhật tổng tiền sau khi trừ xu
+				var newTotal = currentTotal - points;
+
+				// Cập nhật lại hiển thị tổng tiền và giá trị ẩn
+				$('#totalValue').text(newTotal.toFixed(2));
+				$("#FinalTotal").val(newTotal.toFixed(2));
+			});
+
+			// Hàm để trừ số xu vào tổng tiền đã cập nhật
+			function updateTotalWithPoints(currentTotal) {
+				var points = parseInt($("#pointsInput").val()) || 0;
+				var userPoints = parseInt($("#userPoints").text()) || 0;
+
+				if (points > userPoints) {
+					points = userPoints; // Đảm bảo số xu không vượt quá giới hạn
+				}
+
+				var newTotal = currentTotal - points; // Trừ số xu vào tổng đã cập nhật
+
+				// Cập nhật lại hiển thị tổng tiền và giá trị ẩn
+				$('#totalValue').text(newTotal.toFixed(2));
+				$("#FinalTotal").val(newTotal.toFixed(2));
+			}
 		});
 
 		$(document).ready(function () {
 			$("#GiongKhachHang").change(function () {
 				if ($(this).prop("checked")) {
-					$(this).val(true);
-					$(".delivery-info").addClass("d-none");
+
+					$("#HoTen").val("@Model.KhachHang?.Ten");
+					$("#DiaChi").val("@Model.KhachHang?.Diachi");
+					$("#DienThoai").val("@Model.KhachHang?.Sdt");
 				} else {
-					$(this).val(false);
-					$(".delivery-info").removeClass("d-none");
+					$("#HoTen").val("");
+					$("#DiaChi").val("");
+					$("#DienThoai").val("");
+					// $(this).val(false);
+					// $(".delivery-info").removeClass("d-none");
 				}
 			});
 		});
 
+		$(document).ready(function () {
+			$("#BranchDropdown").change(function () {
+				var selectedBranch = $(this).val(); // Lấy giá trị từ dropdown
+				$("#SelectedBranch").val(selectedBranch); // Cập nhật hidden input
+			});
+		});
+		// Cập nhật khi tạo đơn hàng
 		paypal.Buttons({
-			style: {
-				layout: 'vertical',
-				color: 'silver',
-				tagline: 'false'
-			},
 			createOrder: (data, actions) => {
+
+				var selectedDiscount = $("#SelectedDiscount").val() || ""; // Nếu null thì thành chuỗi rỗng
+				var finalTotal = $("#FinalTotal").val() || "0";  // Lấy tổng giá trị sau giảm
+				var selectedBranch = $("#SelectedBranch").val();
+				var pointsInput = $("#pointsInput").val() || 0;
 				return fetch("/Cart/create-paypal-order", {
 					method: "post",
+					headers: {
+						'Content-Type': 'application/json' // Thêm header nếu cần
+					},
+					body: JSON.stringify({
+						// Gửi mã giảm giá và tổng giá trị
+						MaKm: selectedDiscount,
+						totalValue: finalTotal,
+						MaCn: selectedBranch,
+						SoXu: pointsInput
+					})
 				}).then((response) => {
 					if (!response.ok) {
-						return response.json().then(error => { throw "error"; });
+						return response.json().then(error => { throw error; });
 					}
+
 					return response.json();
-				}).then((order) => {
-					console.log(order); // Kiểm tra phản hồi
-					return order.id;
-				}).catch(error => {
-					console.error("Lỗi tạo đơn hàng: ", error); // Log lỗi
-					alert(error.message || "Có lỗi xảy ra trong quá trình tạo đơn hàng.");
-				});
+				}).then((order) => order.id)
+					.catch(error => alert(error.message));
 			},
 			onApprove: (data, actions) => {
-				console.log(data); // Kiểm tra giá trị data
-				return fetch(`/Cart/capture-paypal-order?orderID=${data.orderID}`, {
+				var selectedDiscount = $("#SelectedDiscount").val() || ""; // Nếu null thì thành chuỗi rỗng
+				var finalTotal = $("#FinalTotal").val() || "0";  // Lấy tổng giá trị sau giảm
+				var selectedBranch = $("#SelectedBranch").val();
+				var pointsInput = $("#pointsInput").val();
+				//return fetch(`/Cart/capture-paypal-order?orderId=${data.orderID}`, {
+
+				return fetch("/Cart/capture-paypal-order?orderId=${data.orderID}", {
 					method: "post",
+					headers: {
+						'Content-Type': 'application/json' // Thêm header nếu cần
+					},
+					body: JSON.stringify({
+						// Gửi mã giảm giá và tổng giá trị
+						MaKm: selectedDiscount,
+						totalValue: finalTotal,
+						MaCn: selectedBranch,
+						SoXu: pointsInput,
+					})
 				}).then((response) => {
-					if (!response.ok) {
-						return response.json().then(error => { throw "error"; });
-					}
-					// Chuyển hướng đến trang thành công
 					window.location.href = "/Cart/PaymentSuccess";
-				});
+				}).catch(error => alert(error.message));
 			}
 		}).render('#paypal-button-container');
+
 	</script>
+
 
 }
 <style>

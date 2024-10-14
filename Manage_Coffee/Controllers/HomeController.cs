@@ -17,16 +17,8 @@ namespace Manage_Coffee.Controllers
             _userService = userService;
             _emailService = emailService;
         }
-        public async Task<ViewResult> Index()
+        public async Task<ViewResult> Index() //?ây là trang ch? nha
         {
-            //UserEmailOptions options = new UserEmailOptions{
-            //    ToEmails = new List<string>() { "test@gmail.com"},
-            //    PlaceHolders = new List<KeyValuePair<string, string>>()
-            //    {
-            //        new KeyValuePair<string, string>("{{UserName}}", "LePetit" )
-            //    }
-            //};
-            //await _emailService.SendTestEmail(options);
             var userId = _userService.GetUserId();
             var isLoggedIn = _userService.IsAuthenticated();
             return View();
@@ -37,6 +29,14 @@ namespace Manage_Coffee.Controllers
             return View();
         }
 
+        public IActionResult LienHe()
+        {
+            return View();
+        }
+        public IActionResult CuaHang()
+        {
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

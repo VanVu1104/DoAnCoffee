@@ -1,0 +1,143 @@
+﻿@model IEnumerable<Manage_Coffee.Areas.Admin.Models.ThongKeSanPham>
+@using System.Text.Json;
+@using System.Linq;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Thống Kê Sản Phẩm</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Tùy chỉnh CSS cho biểu đồ */
+        #doanhThuChart {
+            max-width: 600px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Thống Kê Sản Phẩm</h1>
+    <form method="get" action="@Url.Action("Index", "ThongKeTong")">
+        <label for="maCN">Chi Nhánh:</label>
+        <select name="maCN" id="maCN">
+            @if (ViewBag.DanhSachChiNhanh != null)
+            {
+                foreach (var chiNhanh in ViewBag.DanhSachChiNhanh)
+                {
+                    <option value="@chiNhanh.Value">@chiNhanh.Text</option>
+                }
+            }
+            else
+            {
+                <option value="">Không có chi nhánh nào.</option>
+            }
+        </select>
+        <label for="thang">Tháng:</label>
+        <select name="thang" id="thang">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" @(i == ViewBag.Thang ? "selected" : "")>@i</option>
+            }
+        </select>
+
+        <label for="nam">Năm:</label>
+        <select name="nam" id="nam">
+            @for (int i = DateTime.Now.Year - 5; i <= DateTime.Now.Year; i++) // Hiển thị từ 5 năm trước đến năm hiện tại
+            {
+                <option value="@i" @(i == ViewBag.Nam ? "selected" : "")>@i</option>
+            }
+        </select>
+
+
+        <label for="loaiBanHang">Loại Bán Hàng:</label>
+        <select name="loaiBanHang" id="loaiBanHang">
+            <option value="all" @(ViewBag.LoaiBanHang == "all" ? "selected" : "")>Tất Cả</option>
+            <option value="onl" @(ViewBag.LoaiBanHang == "onl" ? "selected" : "")>Online</option>
+            <option value="off" @(ViewBag.LoaiBanHang == "off" ? "selected" : "")>Offline</option>
+        </select>
+
+        <label for="loaiHienThi">Hiển Thị:</label>
+        <select name="loaiHienThi" id="loaiHienThi">
+            <option value="doanhthu" @(ViewBag.LoaiHienThi == "doanhthu" ? "selected" : "")>Doanh Thu</option>
+            <option value="soluong" @(ViewBag.LoaiHienThi == "soluong" ? "selected" : "")>Số Lượng</option>
+        </select>
+
+        <input type="submit" value="Xem Thống Kê" /> 
+
+    </form>
+    <form method="get" action="@Url.Action("DoanhThuTatCaChiNhanh", "ThongKeTong")">
+        <input type="submit" value="Xem Doanh Thu Tất Cả Chi Nhánh" />
+    </form>
+
+    <h2>Thống Kê Doanh Thu</h2>
+    <p>Tổng Doanh Thu: @ViewBag.TongDoanhThu</p>
+    <p>Tổng Số Lượng: @ViewBag.TongSoLuong</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Tên Sản Phẩm</th>
+                <th>Tổng Số Lượng</th>
+                <th>Tổng Doanh Thu</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.TenSanPham</td>
+                    <td>@item.TongSoluong</td>
+                    <td>@item.TongDoanhThu</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <canvas id="doanhThuChart" height="400"></canvas>
+
+    <h3>Tổng Doanh Thu Online: @ViewBag.TongDoanhThuOnl.ToString("N0") VNĐ</h3>
+    <h3>Tổng Doanh Thu Offline: @ViewBag.TongDoanhThuOff.ToString("N0") VNĐ</h3>
+
+    <script>
+        var ctx = document.getElementById('doanhThuChart').getContext('2d');
+        var hienThiDoanhThu = @Html.Raw(ViewBag.LoaiHienThi == "doanhthu" ? "true" : "false");
+
+        var doanhThuData = {
+            labels: @Html.Raw(Json.Serialize(Model.Select(m => m.TenSanPham))),
+            datasets: []
+        };
+
+        if (hienThiDoanhThu) {
+            doanhThuData.datasets.push({
+                label: 'Doanh Thu',
+                data: @Html.Raw(Json.Serialize(Model.Select(m => m.TongDoanhThu))),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            });
+        } else {
+            doanhThuData.datasets.push({
+                label: 'Số Lượng Bán',
+                data: @Html.Raw(Json.Serialize(Model.Select(m => m.TongSoluong))),
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            });
+        }
+
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: doanhThuData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

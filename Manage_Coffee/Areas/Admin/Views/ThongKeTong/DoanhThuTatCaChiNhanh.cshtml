@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Manage_Coffee.Areas.Admin.Models.DoanhThuChiNhanh>
+@using System.Text.Json;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Doanh Thu Tất Cả Chi Nhánh</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #doanhThuChart {
+            max-width: 800px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Thống Kê Doanh Thu Tất Cả Chi Nhánh</h1>
+    <form method="get" action="@Url.Action("DoanhThuTatCaChiNhanh", "ThongKeTong")">
+        <label for="thang">Tháng:</label>
+        <select name="thang" id="thang">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" @(i == ViewBag.Thang ? "selected" : "")>@i</option>
+            }
+        </select>
+
+        <label for="nam">Năm:</label>
+        <select name="nam" id="nam">
+            @for (int i = DateTime.Now.Year - 5; i <= DateTime.Now.Year; i++) // Hiển thị từ 5 năm trước đến năm hiện tại
+            {
+                <option value="@i" @(i == ViewBag.Nam ? "selected" : "")>@i</option>
+            }
+        </select>
+
+
+        <input type="submit" value="Xem Thống Kê" />
+    </form>
+
+    <canvas id="doanhThuChart" height="400"></canvas>
+
+    <script>
+        var ctx = document.getElementById('doanhThuChart').getContext('2d');
+
+        // Lấy dữ liệu từ model
+        var labels = @Html.Raw(Json.Serialize(Model.Select(x => x.MaCn)));
+        var onlineData = @Html.Raw(Json.Serialize(Model.Select(x => x.TongDoanhThuOnline)));
+        var offlineData = @Html.Raw(Json.Serialize(Model.Select(x => x.TongDoanhThuOffline)));
+
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh Thu Online',
+                    data: onlineData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Doanh Thu Offline',
+                    data: offlineData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

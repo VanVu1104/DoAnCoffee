@@ -47,6 +47,7 @@ namespace Manage_Coffee.Controllers
                     Matkhau = model.Matkhau, // Không băm mật khẩu
                     Ten = model.Ten,
                     Diachi = model.Diachi,
+                    Xu=0,
                     Role = "User"
                 };
 

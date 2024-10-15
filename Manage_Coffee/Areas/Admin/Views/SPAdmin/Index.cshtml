@@ -12,7 +12,7 @@
             <th>Tên sản phẩm</th>
             <th>Đơn giá</th>
             <th>Đơn Vị</th>
-          <th>Topping</th>
+            <th>Topping</th>
             <th>Trạng thái</th>
             <th>Hành động</th>
             <th></th>
@@ -40,6 +40,17 @@
                     </label>
                 </td>
                 <td></td>
+                <td>
+                    <a href="@Url.Action("Edit", "SPAdmin", new { id = sanPham.MaSp, area = "Admin" })"
+                       class="btn btn-warning">Sửa</a>
+                </td>
+                <td>
+                    <a href="@Url.Action("Detail", "SPAdmin", new { id = sanPham.MaSp, area = "Admin" })"
+                       class="btn btn-warning">Xem chi tiết</a>
+                </td>
+                <td>
+                    <button class="btn btn-danger" onclick="confirmDelete('@sanPham.MaSp')">Xóa</button>
+                </td>
             </tr>
         }
     </tbody>
@@ -65,6 +76,24 @@
             }
         });
     }
+    function confirmDelete(id) {
+    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+        $.ajax({
+            url: '@Url.Action("DeleteConfirmed", "SPAdmin")',
+            type: 'POST',
+            data: { id: id },
+            success: function(response) {
+                alert('Sản phẩm đã được xóa thành công.');
+                // Xóa sản phẩm khỏi bảng hoặc làm mới danh sách sản phẩm
+                location.reload(); 
+            },
+            error: function(xhr, status, error) {
+                alert('Có lỗi xảy ra, vui lòng thử lại.');
+            }
+        });
+    }
+}
+
 </script>
 
 <style>

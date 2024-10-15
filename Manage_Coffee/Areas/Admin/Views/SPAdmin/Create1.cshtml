@@ -1,37 +1,58 @@
 ﻿@model Manage_Coffee.Models.SanPham
 
-@{
-    ViewData["Title"] = "Thêm sản phẩm";
-}
-
-<h2>Thêm sản phẩm</h2>
-
-<form asp-action="Create1" method="post">
-    <div class="form-group">
-        <label for="MaSp">Mã sản phẩm</label>
-        <input asp-for="MaSp" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="Ten">Tên sản phẩm</label>
-        <input asp-for="Ten" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="Dongia">Đơn giá</label>
-        <input asp-for="Dongia" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="Dvt">Đơn vị tính</label>
-        <input asp-for="Dvt" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="Mota">Mô tả</label>
-        <textarea asp-for="Mota" class="form-control"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="TrangThai">Trạng thái</label>
-        <input asp-for="TrangThai" type="checkbox" />
+<form method="post" asp-action="Create1">
+    <div>
+        <label for="ten">Tên Sản Phẩm:</label>
+        <input type="text" id="ten" name="ten" class="form-control" required />
     </div>
 
-    <button type="submit" class="btn btn-success">Thêm</button>
-    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    <div>
+        <label for="dongia">Đơn Giá:</label>
+        <input type="number" id="dongia" name="dongia" class="form-control" required />
+    </div>
+
+    <div>
+        <label for="dvt">Đơn Vị Tính:</label>
+        <input type="text" id="dvt" name="dvt" class="form-control" required />
+    </div>
+
+    <div>
+        <label for="mota">Mô Tả:</label>
+        <textarea id="mota" name="mota" class="form-control" required></textarea>
+    </div>
+
+    <div>
+        <label for="anh">Đường Dẫn Ảnh:</label>
+        <input type="text" id="anh" name="anh" class="form-control" />
+    </div>
+
+    <div>
+        <label for="trangThai">Trạng Thái:</label>
+        <input type="hidden" name="trangThai" value="false" />
+        <input type="checkbox" id="trangThai" name="trangThai" value="true" />
+    </div>
+
+    <div>
+        <label for="maloai">Loại:</label>
+        <select id="maloai" name="maloai" class="form-control" required>
+            <option value="">-- Chọn Loại --</option>
+            @foreach (var loai in (List<Manage_Coffee.Models.Loai>)ViewData["LoaiList"])
+            {
+                <option value="@loai.Maloai">@loai.Ten</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label for="maTopping">Topping:</label>
+        <select id="maTopping" name="maTopping" class="form-control">
+            <option value="">-- Chọn Topping --</option>
+            @foreach (var topping in (List<Manage_Coffee.Models.SanPham>)ViewData["ToppingList"])
+            {
+                <option value="@topping.MaSp">@topping.Ten</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit">Thêm Sản Phẩm</button>
 </form>

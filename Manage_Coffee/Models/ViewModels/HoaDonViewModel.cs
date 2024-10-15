@@ -6,7 +6,7 @@
         public DateTime Ngaygiodat { get; set; }
         public int? TongTien { get; set; }
         public string DiaChi { get; set; }
-        public bool TrangThai { get; set; }
+        public bool? TrangThai { get; set; }
         public string? Pttt { get; set; }
         public int? TienShip { get; set; }
 		public int? SoXu { get; set; }

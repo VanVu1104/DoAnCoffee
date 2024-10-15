@@ -23,7 +23,20 @@
                 <td>@order.Ngaygiodat.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>@order.TongTien?.ToString("N0")</td>
                 <td>@order.DiaChi</td>
-                <td>@(order.TrangThai ? "Hoàn Thành" : "Chưa Hoàn Thành")</td>
+                <td>
+                    @if (@order.TrangThai == true)
+                    {
+                        <p>Hoàn thành</p>
+                    }
+                    else if (@order.TrangThai == false)
+                    {
+                        <p>Chờ xác nhận </p>
+                    }
+                    else
+                    {
+                        <p>Đã hủy đơn</p>
+                    }
+                </td>
                 <td>@order.Pttt</td>
                 <td>@order.TienShip?.ToString("N0")</td>
                 <td>

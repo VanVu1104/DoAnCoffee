@@ -1,0 +1,105 @@
+﻿@model Manage_Coffee.Models.SanPham
+
+<h2>Chi Tiết Sản Phẩm</h2>
+
+<div>
+    <label>Mã Sản Phẩm:</label>
+    <span>@Model.MaSp</span>
+</div>
+
+<div>
+    <label>Tên Sản Phẩm:</label>
+    <p>@Model.Ten</p>
+</div>
+
+<div>
+    <label>Đơn Giá:</label>
+    <p>@Model.Dongia VND</p>
+</div>
+
+<div>
+    <label>Đơn Vị Tính:</label>
+    <p>@Model.Dvt</p>
+</div>
+
+<div>
+    <label>Mô Tả:</label>
+    <p>@Model.Mota</p>
+</div>
+
+<div>
+    <label>Đường Dẫn Ảnh:</label>
+    <p>@Model.Anh</p>
+</div>
+
+<div>
+    <label>Trạng Thái:</label>
+    <span>@(Model.TrangThai ? "Hoạt động" : "Không hoạt động")</span>
+</div>
+
+<div>
+    <label>Loại:</label>
+    @if (ViewData["LoaiList"] is List<Manage_Coffee.Models.Loai> loaiList)
+    {
+        var loai = loaiList.FirstOrDefault(l => l.Maloai == Model.Maloai);
+        if (loai != null)
+        {
+            <p>@loai.Ten</p>
+        }
+        else
+        {
+            <p>Không xác định</p>
+        }
+    }
+    else
+    {
+        <p>Không xác định</p>
+    }
+</div>
+
+<div>
+    <label>Topping:</label>
+    @if (ViewData["ToppingList"] is List<Manage_Coffee.Models.SanPham> toppingList)
+    {
+        var topping = toppingList.FirstOrDefault(t => t.MaSp == Model.MaTopping);
+        if (topping != null)
+        {
+            <p>@topping.Ten</p>
+        }
+        else
+        {
+            <p>Không có</p>
+        }
+    }
+    else
+    {
+        <p>Không có</p>
+    }
+   
+</div>
+<button class="btn btn-danger" onclick="confirmDelete('@Model.MaSp')">Xóa</button>
+<a href="@Url.Action("Index", "SPAdmin")" class="btn btn-secondary">Quay Lại</a>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    function confirmDelete(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+            $.ajax({
+                url: '@Url.Action("DeleteConfirmed", "SPAdmin")',
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    alert('Sản phẩm đã được xóa thành công.');
+                    // Xóa sản phẩm khỏi bảng hoặc làm mới danh sách sản phẩm
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                }
+            });
+        }
+    }
+</script>
+

@@ -1,0 +1,72 @@
+﻿@model Manage_Coffee.Models.SanPham
+
+<form method="post" asp-action="Edit">
+    <input type="hidden" id="maSp" name="MaSp" value="@Model.MaSp" />
+
+    <div>
+        <label for="ten">Tên Sản Phẩm:</label>
+        <input type="text" id="ten" name="Ten" class="form-control" value="@Model.Ten" required />
+    </div>
+
+    <div>
+        <label for="dongia">Đơn Giá:</label>
+        <input type="number" id="dongia" name="Dongia" class="form-control" value="@Model.Dongia" required />
+    </div>
+
+    <div>
+        <label for="dvt">Đơn Vị Tính:</label>
+        <input type="text" id="dvt" name="Dvt" class="form-control" value="@Model.Dvt" required />
+    </div>
+
+    <div>
+        <label for="mota">Mô Tả:</label>
+        <textarea id="mota" name="Mota" class="form-control" required>@Model.Mota</textarea>
+    </div>
+
+    <div>
+        <label for="anh">Đường Dẫn Ảnh:</label>
+        <input type="text" id="anh" name="Anh" class="form-control" value="@Model.Anh" />
+    </div>
+
+    <div>
+        <label for="trangThai">Trạng Thái:</label>
+        <input type="hidden" name="TrangThai" value="false" />
+        <input type="checkbox" id="trangThai" name="TrangThai" value="true" @(Model.TrangThai ? "checked" : "") />
+    </div>
+
+    <div>
+        <label for="maloai">Loại:</label>
+        <select id="maloai" name="Maloai" class="form-control" required>
+            <option value="">-- Chọn Loại --</option>
+            @if (ViewData["LoaiList"] is List<Manage_Coffee.Models.Loai> cate)
+            {
+                foreach (var loai in cate)
+                {
+                    <option value="@loai.Maloai"
+                            selected="@(loai.Maloai == Model.Maloai ? "selected" : "")">
+                        @loai.Ten
+                    </option>
+                }
+            }
+        </select>
+    </div>
+
+    <div>
+        <label for="maTopping">Topping:</label>
+        <select id="maTopping" name="MaTopping" class="form-control">
+            <option value="">-- Chọn Topping --</option>
+            @if (ViewData["ToppingList"] is List<Manage_Coffee.Models.SanPham> toppingList)
+            {
+                foreach (var topping in toppingList)
+                {
+                    <option value="@topping.MaSp"
+                            selected="@(topping.MaSp == Model.MaTopping ? "selected" : "")">
+                        @topping.Ten
+                    </option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit">Lưu Thay Đổi</button>
+</form>

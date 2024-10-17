@@ -43,7 +43,7 @@ else
 
 <p><strong>Tổng tiền: @Model.TongTien VND</strong></p>
 
-<form asp-area="Admin" asp-controller="PhucVu" asp-action="ConfirmCheckout" method="post">
+<form asp-action="ConfirmCheckout" method="post">
     <div class="form-group">
         <label for="soban">Số bàn</label>
         <input type="number" id="soban" name="soban" class="form-control" required />

@@ -4,4 +4,21 @@
 
 <h2>Thanh toán thành công!</h2>
 <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
-<a href="@Url.Action("Index", "PhucVu")" class="btn btn-primary">Quay lại trang chủ</a>
+
+<button onclick="downloadPdf('@ViewBag.MaOrder')" class="btn btn-success">
+    Tải hóa đơn PDF
+</button>
+
+<script>
+    function downloadPdf(maOrder) {
+        if (maOrder) {
+            window.location.href = `/Admin/PhucVu/DownloadPdf?maOrder=${maOrder}`;
+        } else {
+            alert("Không tìm thấy mã đơn hàng!");
+        }
+    }
+</script>
+
+<a href="@Url.Action("Index", "PhucVu")" class="btn btn-primary mt-3">
+    Quay lại trang chủ
+</a>

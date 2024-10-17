@@ -1,9 +1,16 @@
-﻿            using Manage_Coffee.Areas.Admin.Models;
+﻿using Manage_Coffee.Areas.Admin.Models;
 using Manage_Coffee.Helpers;
 using Manage_Coffee.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.IO.Font;
+using iText.Kernel.Font;
+using static iText.Kernel.Font.PdfFontFactory;
+using System.Globalization;
+
 
 namespace Manage_Coffee.Areas.Admin.Controllers
 {
@@ -128,8 +135,7 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             return View(viewModel);
         }
         [HttpPost]
-        [Route("Checkout")]
-        public IActionResult ConfirmCheckout(int soban, string pttt, string tenKhachHang, int sdt)
+        public IActionResult Checkout(int soban, string pttt, string tenKhachHang, int sdt)
         {
             // Lấy giỏ hàng từ Session
             var cart = HttpContext.Session.Get<List<CartItem>>("Cart");
@@ -183,11 +189,16 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             // Xóa giỏ hàng sau khi thanh toán thành công
             HttpContext.Session.Remove("Cart");
 
+            // Lưu mã đơn hàng vào TempData để dùng ở trang CheckoutSuccess
+            TempData["MaOrder"] = phieuOrder.MaOrder;
+
             // Chuyển hướng đến trang thành công
             return RedirectToAction("CheckoutSuccess");
         }
         public IActionResult CheckoutSuccess()
         {
+            var maOrder = TempData["MaOrder"] as string; // Lấy mã đơn hàng từ TempData
+            ViewBag.MaOrder = maOrder; // Truyền mã đơn hàng vào ViewBag
             return View();
         }
         [HttpPost]
@@ -246,6 +257,58 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             HttpContext.Session.Set("Cart", cart);
             return PartialView("_CartPartial", cart);
         }
-    }
 
+        // Hàm Download File PDF
+        public IActionResult DownloadPdf(string maOrder)
+        {
+            if (string.IsNullOrEmpty(maOrder))
+            {
+                return BadRequest("Mã đơn hàng không hợp lệ.");
+            }
+
+            var phieuOrder = _context.PhieuOrders
+                .Include(po => po.CtsanPhams)
+                .FirstOrDefault(po => po.MaOrder == maOrder);
+
+            if (phieuOrder == null)
+            {
+                return NotFound("Không tìm thấy đơn hàng.");
+            }
+
+            byte[] pdfBytes;
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new PdfWriter(stream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+                // Khai báo font hỗ trợ Unicode
+
+                PdfFont font = PdfFontFactory.CreateFont("C:/WINDOWS/Fonts/ARIAL.TTF", PdfEncodings.IDENTITY_H, EmbeddingStrategy.PREFER_EMBEDDED);
+
+                // Sử dụng font cho tài liệu PDF
+                document.SetFont(font);
+                document.Add(new Paragraph("HÓA ĐƠN MUA HÀNG").SetFontSize(18).SetBold());
+                document.Add(new Paragraph($"Mã đơn hàng: {phieuOrder.MaOrder}"));
+                document.Add(new Paragraph($"Ngày đặt: {phieuOrder.Ngaygiodat}"));
+                document.Add(new Paragraph($"Số bàn: {phieuOrder.Soban}"));
+                document.Add(new Paragraph($"Tổng tiền: {phieuOrder.Tongtien.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))} VNĐ"));
+
+                document.Add(new Paragraph("Chi tiết sản phẩm:").SetBold());
+                foreach (var item in phieuOrder.CtsanPhams)
+                {
+                    document.Add(new Paragraph(
+                        $"- Sản phẩm: {item.MaSp}, Số lượng: {item.Soluong}, Giá: {item.Gia.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))} VNĐ")
+                    );
+                }
+
+                document.Close();
+                pdfBytes = stream.ToArray();
+            }
+
+            return File(pdfBytes, "application/pdf", $"HoaDon_{maOrder}.pdf");
+        }
+
+
+    }
 }

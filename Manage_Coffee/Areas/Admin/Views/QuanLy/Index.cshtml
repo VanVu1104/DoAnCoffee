@@ -23,6 +23,9 @@
                 <td>@item.Dvt</td>
                 <td><img src="@item.Anh" alt="Ảnh" width="100" /></td>
                 <td>@item.Mota</td>
+                <td>
+                    @Html.ActionLink("Sửa", "Edit", "QuanLy", new { id = item.MaNvl, area = "Admin" }, new { @class = "btn btn-warning" })
+                </td>
             </tr>
         }
     </tbody>

@@ -19,7 +19,7 @@ namespace Manage_Coffee.Areas.Admin.Controllers
 		public IActionResult Index()
 		{
 
-			var manv = HttpContext.Session.GetString("NhanVienPhucVu");
+			var manv = HttpContext.Session.GetString("Manv");
 			if(manv == null)
 			{
 				return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
@@ -32,8 +32,46 @@ namespace Manage_Coffee.Areas.Admin.Controllers
 			var nvl = _context.NguyenVatLieus.ToList();
 			return nvl;
 		}
-		// Phương thức GET để hiển thị form thêm nguyên vật liệu
-		public IActionResult Create()
+        // Hiển thị form chỉnh sửa
+        [HttpGet]
+        public IActionResult Edit(string id)
+        {
+            var nvl = _context.NguyenVatLieus.FirstOrDefault(x => x.MaNvl == id);
+            if (nvl == null)
+            {
+                return NotFound();
+            }
+            return View(nvl);
+        }
+
+        // Xử lý dữ liệu từ form gửi lên
+        [HttpPost]
+        public IActionResult Edit(string MaNvl, string Ten, int Dongia, string Dvt, string Anh, string Mota)
+        {
+            // Tìm NVL cần sửa trong cơ sở dữ liệu
+            var nvl = _context.NguyenVatLieus.FirstOrDefault(x => x.MaNvl == MaNvl);
+            if (nvl != null)
+            {
+                // Cập nhật thông tin mới
+                nvl.Ten = Ten;
+                nvl.Dongia = Dongia;
+                nvl.Dvt = Dvt;
+                nvl.Anh = Anh;
+                nvl.Mota = Mota;
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                _context.NguyenVatLieus.Update(nvl);
+                _context.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+
+            // Trường hợp không tìm thấy NVL
+            return NotFound();
+        }
+
+        // Phương thức GET để hiển thị form thêm nguyên vật liệu
+        public IActionResult Create()
 		{
 			var nvl = new NguyenVatLieu
 			{

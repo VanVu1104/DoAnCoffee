@@ -1,0 +1,37 @@
+﻿@model Manage_Coffee.Models.NguyenVatLieu
+
+<h2>Sửa Nguyên Vật Liệu</h2>
+
+<form asp-action="Edit" method="post">
+    <!-- Ẩn mã NVL để giữ lại khi submit -->
+    <input type="hidden" id="MaNvl" name="MaNvl" value="@Model.MaNvl" />
+
+    <div class="form-group">
+        <label for="Ten" class="font-weight-bold">Tên Nguyên Vật Liệu</label>
+        <input id="Ten" name="Ten" class="form-control" value="@Model.Ten" placeholder="Nhập tên nguyên vật liệu" />
+    </div>
+
+    <div class="form-group">
+        <label for="Dongia" class="font-weight-bold">Đơn Giá (VNĐ)</label>
+        <input id="Dongia" name="Dongia" type="number" step="0.01" class="form-control"
+               value="@Model.Dongia" placeholder="Nhập đơn giá" />
+    </div>
+
+    <div class="form-group">
+        <label for="Dvt" class="font-weight-bold">Đơn Vị Tính</label>
+        <input id="Dvt" name="Dvt" class="form-control" value="@Model.Dvt" placeholder="Nhập đơn vị tính" />
+    </div>
+
+    <div class="form-group">
+        <label for="Anh" class="font-weight-bold">Ảnh Nguyên Vật Liệu (URL)</label>
+        <input id="Anh" name="Anh" class="form-control" value="@Model.Anh" placeholder="Nhập đường dẫn ảnh" />
+    </div>
+
+    <div class="form-group">
+        <label for="Mota" class="font-weight-bold">Mô Tả</label>
+        <textarea id="Mota" name="Mota" class="form-control" placeholder="Nhập mô tả">@Model.Mota</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+    @Html.ActionLink("Quay lại", "Index", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-secondary ml-2" })
+</form>

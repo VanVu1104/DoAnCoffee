@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Manage_Coffee.Models.PhieuOrder>
+
+<h2>Danh sách đơn hàng</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Mã đơn hàng</th>
+            <th>Số bàn</th>
+            <th>Ngày giờ đặt</th>
+            <th>Tổng tiền</th>
+            <th>Phương thức thanh toán</th>
+            <th>Tên khách hàng</th>
+            <th>Tên nhân viên</th>
+            <th>Mã chi nhánh</th>
+            <th>Số điện thoại</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.MaOrder</td>
+                <td>@order.Soban</td>
+                <td>@order.Ngaygiodat</td>
+                <td>@order.Tongtien.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
+                <td>@order.Pttt</td>
+                <td>@order.Ten</td>
+                <td>@order.MaNv</td>
+                <td>@order.MaCn</td>
+                <td>@order.Sdt</td>
+            </tr>
+        }
+    </tbody>
+</table>

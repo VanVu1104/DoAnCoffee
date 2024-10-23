@@ -33,8 +33,11 @@
     @Html.ActionLink("Thêm Nguyên Vật Liệu Mới", "Create", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-primary" })
 </p>
 <p>
-    @Html.ActionLink("Thêm phiếu nhập xuất nguyên vật liệu", "CreateMaterial", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Danh sách phiếu nhập xuất", "LoadPhieuNhapXuat", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-primary" })
 </p>
 <p>
     @Html.ActionLink("Quản lý sản phẩm", "Index", "SPAdmin", new { area = "Admin" }, new { @class = "btn btn-primary" })
+</p>
+<p>
+    @Html.ActionLink("Quản lý nhân viên", "LoadEmployee", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-primary" })
 </p>

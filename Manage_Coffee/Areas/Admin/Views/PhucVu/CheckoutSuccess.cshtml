@@ -1,10 +1,47 @@
-﻿@{
+﻿@using System.Globalization
+@{
     ViewData["Title"] = "Thanh toán thành công";
 }
+@{
+    var phieuOrder = ViewBag.PhieuOrder;
+    var vietnamCulture = new CultureInfo("vi-VN"); // Định dạng văn hóa Việt Nam
 
+}
 <h2>Thanh toán thành công!</h2>
 <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
+<h2>Chi tiết đơn hàng: @phieuOrder.MaOrder</h2>
 
+<p><strong>Ngày giờ đặt:</strong> @phieuOrder.Ngaygiodat</p>
+<p><strong>Số bàn:</strong> @phieuOrder.Soban</p>
+<p><strong>Khách hàng:</strong> @phieuOrder.Ten</p>
+<p><strong>Số điện thoại:</strong> @phieuOrder.Sdt</p>
+<p><strong>Phương thức thanh toán:</strong> @phieuOrder.Pttt</p>
+<p><strong>Tổng tiền:</strong> @phieuOrder.Tongtien.ToString("C0", vietnamCulture)</p>
+
+<h3>Chi tiết sản phẩm:</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Mã sản phẩm</th>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in phieuOrder.ChiTietSanPhams)
+        {
+            <tr>
+                <td>@item.MaSp</td>
+                <td>@item.SanPham</td>
+                <td>@item.Soluong</td>
+                <td>@item.Gia.ToString("C")</td>
+                <td>@item.TongTien.ToString("C0", vietnamCulture)</td>
+            </tr>
+        }
+    </tbody>
+</table>
 <button onclick="downloadPdf('@ViewBag.MaOrder')" class="btn btn-success">
     Tải hóa đơn PDF
 </button>

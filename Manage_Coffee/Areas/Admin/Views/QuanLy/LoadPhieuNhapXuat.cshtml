@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Manage_Coffee.Models.PhieuNhapXuat>
+
+<h2>Danh sách Phiếu Nhập Xuất</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Mã phiếu</th>
+            <th>Ngày lập</th>
+            <th>Loại phiếu</th>
+            <th>Địa Chỉ</th>
+            <th>Tên nhân viên</th>
+            <th>Mã cung cấp</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var phieu in Model)
+        {
+            <tr>
+                <td>@phieu.MaPhieu</td>
+                <td>@phieu.NgayLap.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@phieu.Loai</td>
+                <td>@phieu.Diachi</td>
+                <td>@phieu.MaNv</td>
+                <td>@phieu.MaCcap</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p>
+    @Html.ActionLink("Thêm phiếu nhập xuất nguyên vật liệu", "CreateMaterial", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-primary" })
+</p>

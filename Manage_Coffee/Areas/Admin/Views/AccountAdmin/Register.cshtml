@@ -1,7 +1,6 @@
 ﻿@model Manage_Coffee.Areas.Admin.Models.RegisterViewModel
 
 <h2>Đăng ký tài khoản</h2>
-
 <form asp-action="Register" method="post">
     <div>
         <label for="Ten">Họ tên:</label>
@@ -16,22 +15,61 @@
         <input type="password" id="Mkhau" name="Mkhau" asp-for="Mkhau" required />
     </div>
     <div>
+        <label>Giới tính:</label>
+        <select id="GioiTinh" name="GioiTinh" asp-for="GioiTinh">
+            <option value="true">Nữ</option>
+            <option value="false">Nam</option>
+        </select>
+    </div>
+    <div>
         <label for="Chucvu">Chức vụ:</label>
         <select id="Chucvu" name="Chucvu" asp-for="Chucvu">
-            <option value="Quản lý">Quản lý</option>
+            @* Nếu là quản lý tổng *@
+            @if (ViewBag.ShowManagerOption == true && ViewBag.ShowManagerOption != null)
+            {
+                <option value="Quản lý">Quản lý</option>
+            }
             <option value="Phục vụ">Phục vụ</option>
         </select>
     </div>
+    @if (ViewBag.ShowManagerOption == true)
+    {
+        <div>
+            <label for="inputMaCn">Mã chi nhánh:</label>
+            <input type="text" id="inputMaCn" name="inputMaCn" required />
+        </div>
+    }
+    else
+    {
+        <input type="hidden" name="inputMaCn" value="@ViewBag.BranchCode" />
+    }
     <div>
         <label for="Diachi">Địa chỉ:</label>
         <input type="text" id="Diachi" name="Diachi" asp-for="Diachi" required />
     </div>
-    <button type="submit">Đăng ký</button>
-</form>
-
-@if (ViewBag.Error != null)
-{
-    <div style="color: red;">
-        @ViewBag.Error
+    <div>
+        <label for="NgaySinh">Ngày tháng năm sinh</label>
+        <input type="datetime" id="NgaySinh" name="NgaySinh" asp-for="NgaySinh" required />
     </div>
+    <button type="submit">Đăng ký</button>
+   
+</form>
+<div>
+    @if (ViewBag.ShowManagerOption == true)
+    {
+        <p>
+            @Html.ActionLink("Quay lại", "Index", "ThongKeTong", new { area = "Admin" }, new { @class = "btn btn-primary" })
+        </p>
+    }
+    else
+    {
+        <p>
+            @Html.ActionLink("Quay lại", "LoadEmployee", "QuanLy", new { area = "Admin" }, new { @class = "btn btn-primary" })
+        </p>
+    }
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div style="color: green;">@TempData["Success"]</div>
 }

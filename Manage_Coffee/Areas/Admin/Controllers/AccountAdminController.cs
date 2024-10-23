@@ -19,17 +19,28 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             return View();
         }
         // GET: Hiển thị form đăng ký
+        // Đăng ký tài khoản nhân viên của quản lý
         [Route("Register-admin")]
         [HttpGet]
         public IActionResult Register()
         {
+            var position = HttpContext.Session.GetString("NhanVienChucVu");
+            var maCn = HttpContext.Session.GetString("MaCn");
+
+            ViewBag.ShowManagerOption = position != null && position == "Quản lý tổng";
+            ViewBag.BranchCode = maCn; // Lấy mã chi nhánh nếu là quản lý chi nhánh
+
             return View();
         }
-        // POST: Xử lý đăng ký
+        // POST: Xử lý cấp tài khoản
         [Route("Register-admin")]
         [HttpPost]
         public IActionResult Register(RegisterViewModel model)
         {
+            var position = HttpContext.Session.GetString("NhanVienChucVu");
+            var maCn = HttpContext.Session.GetString("MaCn") ?? throw new Exception("Mã chi nhánh không tồn tại");
+            // Xử lý mã chi nhánh tùy theo loại quản lý
+            string finalMaCn = (position == "Quản lý tổng" ? model.inputMaCn : maCn) ?? throw new Exception("Mã chi nhánh không tồn tại");
             if (ModelState.IsValid)
             {
                 // Kiểm tra số điện thoại đã tồn tại chưa
@@ -37,29 +48,35 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 if (existingNhanVien != null)
                 {
                     ViewBag.Error = "Số điện thoại đã tồn tại!";
-                    return View(model);
+                    return View(model); // Hiển thị lại form với lỗi
                 }
 
                 // Tạo nhân viên mới
                 var newNhanVien = new NhanVien
                 {
-                    MaNv = Guid.NewGuid().ToString().Substring(0, 5), // Chỉ lấy 5 ký tự đầu tiên
+                    MaNv = Guid.NewGuid().ToString().Substring(0, 5), // Lấy 5 ký tự đầu
                     Ten = model.Ten,
                     Sdt = model.Sdt,
                     Mkhau = model.Mkhau,
                     Chucvu = model.Chucvu,
                     Diachi = model.Diachi,
-                    Ngaysinh = DateTime.Now // Tạm thời sử dụng ngày hiện tại cho ngày sinh
+                    Ngaysinh = model.NgaySinh,
+                    GioiTinh = model.GioiTinh,
+                    MaCn = finalMaCn,
                 };
 
                 _context.NhanViens.Add(newNhanVien);
                 _context.SaveChanges();
 
-                // Điều hướng tới trang login sau khi đăng ký thành công
-                return RedirectToAction("LoginAdmin", "AccountAdmin", new { area = "Admin" });
+                // Gửi thông báo thành công qua TempData
+                TempData["Success"] = "Tạo tài khoản thành công!";
+
+                // Giữ nguyên trang và làm trống model để người dùng tạo thêm tài khoản mới
+                ModelState.Clear();
+                return View();
             }
 
-            return View(model);
+            return View(model); // Nếu có lỗi thì hiển thị lại form với dữ liệu cũ
         }
         [Route("Login-admin")]
         [HttpGet]
@@ -82,6 +99,7 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                 HttpContext.Session.SetString("NhanVienChucVu", nhanVien.Chucvu);
                 HttpContext.Session.SetString("Ten", nhanVien.Ten);
                 HttpContext.Session.SetString("Manv", nhanVien.MaNv);
+                HttpContext.Session.SetString("MaCn", nhanVien.MaCn);
                 if(nhanVien.MaCn == null)
                 {
                     nhanVien.MaCn = "CN001";

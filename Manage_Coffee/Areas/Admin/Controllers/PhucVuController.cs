@@ -83,6 +83,7 @@ namespace Manage_Coffee.Areas.Admin.Controllers
                     Ten = product.Ten,
                     Dongia = product.Dongia,
                     SizeID = idsize,
+                    SizeName = size.Ten,
                     TriGia = size.TriGia,
                     Soluong = 1
                 });
@@ -147,8 +148,8 @@ namespace Manage_Coffee.Areas.Admin.Controllers
             }
 
             // Lấy thông tin nhân viên từ Session
-            var maNv = HttpContext.Session.GetString("Manv");
-            var maCn = HttpContext.Session.GetString("Macn");
+            var maNv = HttpContext.Session.GetString("Manv") ?? throw new Exception("Không tìm thấy mã nhân viên");
+            var maCn = HttpContext.Session.GetString("Macn") ?? throw new Exception("Không tìm thấy mã chi nhánh của nhân viên");
 
             // Tạo đối tượng PhieuOrder
             var phieuOrder = new PhieuOrder
@@ -199,6 +200,35 @@ namespace Manage_Coffee.Areas.Admin.Controllers
         {
             var maOrder = TempData["MaOrder"] as string; // Lấy mã đơn hàng từ TempData
             ViewBag.MaOrder = maOrder; // Truyền mã đơn hàng vào ViewBag
+            if (maOrder == null)
+            {
+                throw new Exception("Không tìm thấy mã đơn hàng");
+            }
+            // Truy vấn đơn hàng và các chi tiết sản phẩm liên quan
+            var phieuOrder = _context.PhieuOrders
+                .Where(po => po.MaOrder == maOrder)
+                .Select(po => new
+                {
+                    po.MaOrder,
+                    po.Ngaygiodat,
+                    po.Soban,
+                    po.Tongtien,
+                    po.Ten,
+                    po.Sdt,
+                    po.Pttt,
+                    ChiTietSanPhams = _context.CtsanPhams
+                        .Where(ct => ct.MaOrder == po.MaOrder)
+                        .Select(ct => new
+                        {
+                            ct.MaSp,
+                            SanPham = _context.SanPhams.FirstOrDefault(sp => sp.MaSp == ct.MaSp).Ten,
+                            ct.Soluong,
+                            ct.Gia,
+                            ct.TongTien
+                        }).ToList()
+                }).FirstOrDefault() ?? throw new Exception("Lỗi khi load đơn hàng");
+            // Truyền dữ liệu vào ViewBag để hiển thị trong View
+            ViewBag.PhieuOrder = phieuOrder;
             return View();
         }
         [HttpPost]
@@ -308,7 +338,40 @@ namespace Manage_Coffee.Areas.Admin.Controllers
 
             return File(pdfBytes, "application/pdf", $"HoaDon_{maOrder}.pdf");
         }
+        // Load danh sách order của phục vụ
+        public IActionResult LoadPhieuOrder()
+        {
+            var phieuOrders = PhieuOrder();
+            if (phieuOrders == null || !phieuOrders.Any())
+            {
+                throw new Exception("Không có danh sách đơn hàng");
+            }
+            return View(phieuOrders);
+        }
 
+        public List<PhieuOrder> PhieuOrder()
+        {
+            var orderList = _context.PhieuOrders
+            .Select(order => new PhieuOrder
+            {
+                MaOrder = order.MaOrder,
+                Ngaygiodat = order.Ngaygiodat,
+                Soban = order.Soban,
+                Tongtien = order.Tongtien,
+                Pttt = order.Pttt,
+                MaCn = order.MaCn,
+                Ten = order.Ten,
+                Sdt = order.Sdt,
+                MaNv = _context.NhanViens.Where(nv => nv.MaNv == order.MaNv).Select(nv => nv.Ten)
+                .FirstOrDefault() // Lấy tên nhân viên từ mã nhân viên
+            }).ToList();
+            if (!orderList.Any())
+            {
+                throw new Exception("Không có danh sách hóa đơn");
+            }
+
+            return orderList;
+        }
 
     }
 }

@@ -1,0 +1,53 @@
+﻿@model List<Manage_Coffee.Models.NhanVien>
+
+<h2>Danh sách nhân viên phục vụ</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div style="color: red;">Không tìm thấy nhân viên nào có chức vụ phục vụ.</div>
+}
+else
+{
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Mã chi nhánh</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var nv in Model)
+            {
+                <tr>
+                    <td>@nv.Ten</td>
+                    <td>@nv.Sdt</td>
+                    <td>@nv.Diachi</td>
+                    <td>@nv.Ngaysinh.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @if(nv.GioiTinh == true)
+                        {
+                            <p>Nữ</p>
+                        }
+                        else if(nv.GioiTinh == false)
+                        {
+                            <p>Nam</p>
+                        }
+                        else
+                        {
+                            <p></p>
+                        }
+                    </td>
+                    <td>@nv.MaCn</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<p>
+    @Html.ActionLink("Thêm nhân viên mới", "Register", "AccountAdmin", new { area = "Admin" }, new { @class = "btn btn-primary" })
+</p>
+
